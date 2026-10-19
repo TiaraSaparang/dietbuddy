@@ -846,10 +846,10 @@
             <span class="soon-pill">Segera</span>
           </button>
 
-          <button class="side-link disabled-soon" onclick="showToast('Fitur Pengaturan & Premium berada dalam tahap pengembangan berikutnya (UAS).')">
+          <button class="side-link disabled-soon" onclick="showToast('Fitur Berlangganan Premium (Paket 1, 3, dan 6 Bulan) berada dalam tahap pengembangan berikutnya (UAS).')">
             <span class="side-link-left">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-              <span>Pengaturan</span>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <span>Berlangganan Premium</span>
             </span>
             <span class="soon-pill">Segera</span>
           </button>
@@ -857,8 +857,11 @@
       </div>
 
       <div class="sidebar-bottom">
-        <button class="btn btn-primary" onclick="navigateTo('chat'); switchChatMode('consult');">
-          Tanya AI Sekarang
+        <button class="side-link" id="sidenav-settings" style="border:1px solid var(--border-blue); background:var(--surface-ice); color:var(--primary-deep); justify-content:center; gap:8px;" onclick="navigateTo('settings')">
+          <span class="side-link-left">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Pengaturan</span>
+          </span>
         </button>
         <button class="btn btn-outline btn-sm" style="width:100%;" onclick="handleLogout()">
           Keluar Akun
@@ -1198,6 +1201,60 @@
           </div>
         </div>
       </section>
+
+      <!-- ===============================================================
+           HALAMAN 4: PENGATURAN AKUN & PREFERENSI DIET (AKTIF)
+           =============================================================== -->
+      <section class="page-view" id="screen-settings">
+        <div style="max-width:680px;">
+          <h1 class="h-xl" style="margin-bottom:4px;">Pengaturan Aplikasi</h1>
+          <p class="p-sm" style="margin-bottom:18px;">Kelola pengaturan profil akun, keamanan password, dan preferensi konsistensi harianmu.</p>
+
+          <!-- Kartu 1: Ubah Nama & Password Akun -->
+          <div class="card" style="margin-bottom:18px;">
+            <div class="h-md" style="margin-bottom:12px;">Pengaturan Akun & Keamanan</div>
+            <div class="form-group">
+              <label class="form-label">Nama Pengguna</label>
+              <input type="text" id="setNamaInput" class="form-input" value="Tiara Saparang" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Terdaftar</label>
+              <input type="email" id="setEmailInput" class="form-input" value="tiara@dietbuddy.id" disabled style="background:#F1F5F9; color:var(--text-muted);" />
+            </div>
+            <div class="form-group" style="margin-bottom:16px;">
+              <label class="form-label">Ubah Password Baru (Opsional, minimal 8 karakter)</label>
+              <div class="pass-wrap">
+                <input type="password" id="setNewPassInput" class="form-input" placeholder="Kosongkan jika tidak ingin mengubah password" />
+                <button type="button" class="pass-eye-btn" onclick="togglePassword('setNewPassInput', 'eyeSetPass')" title="Lihat / Sembunyikan Password">
+                  <svg id="eyeSetPass" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="simpanPengaturanAkun()">
+              Simpan Pengaturan Akun
+            </button>
+          </div>
+
+          <!-- Kartu 2: Pengaturan Target & Konsistensi Harian -->
+          <div class="card">
+            <div class="h-md" style="margin-bottom:8px;">Pengaturan Konsistensi & Batas Aman Kalori</div>
+            <p class="p-sm" style="margin-bottom:14px;">
+              Sistem DietBuddy menjaga batas aman kalori minimal (1.200 kkal/hari untuk perempuan & 1.500 kkal/hari untuk laki-laki). Kamu juga dapat mengatur ulang catatan hari konsistensi dietmu di bawah ini.
+            </p>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; background:#F8FAFC; border:1px solid var(--border-light); border-radius:12px; margin-bottom:12px;">
+              <div>
+                <div class="h-sm">Status Check-In Hari Ini</div>
+                <div class="p-sm" id="setInfoHariDiet">Tercatat sudah 2 hari konsisten menjalankan diet</div>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="resetCheckInHarian()">
+                Reset Check-In Hari Ini
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 
@@ -1461,7 +1518,7 @@
       document.querySelectorAll(".page-view").forEach(el => el.classList.remove("active"));
       document.getElementById("screen-" + screenId).classList.add("active");
 
-      ["home", "chat"].forEach(id => {
+      ["home", "chat", "settings"].forEach(id => {
         const sBtn = document.getElementById("sidenav-" + id);
         if (sBtn) sBtn.classList.toggle("active", id === screenId);
       });
@@ -1822,6 +1879,42 @@
       showToast("Check-in berhasil! Kamu sudah konsisten menjalankan diet selama " + state.hariDiet + " hari.");
     }
 
+    // FUNGSI PENGATURAN AKUN & RESET CHECK-IN HARIAN
+    function simpanPengaturanAkun() {
+      const namaBaru = document.getElementById("setNamaInput").value.trim();
+      const passBaru = document.getElementById("setNewPassInput").value.trim();
+
+      if (!namaBaru) {
+        showToast("Nama pengguna tidak boleh kosong.");
+        return;
+      }
+      if (passBaru && passBaru.length < 8) {
+        showToast("Password baru minimal harus 8 karakter.");
+        return;
+      }
+
+      state.user.nama = namaBaru;
+      const found = state.registeredUsers.find(u => u.email.toLowerCase() === state.user.email.toLowerCase());
+      if (found) {
+        found.nama = namaBaru;
+        if (passBaru) found.password = passBaru;
+        try {
+          localStorage.setItem("dietbuddy_users_v2", JSON.stringify(state.registeredUsers));
+        } catch (e) {}
+      }
+
+      document.getElementById("setNewPassInput").value = "";
+      updateAllViews();
+      showToast("Pengaturan akun berhasil disimpan!");
+    }
+
+    function resetCheckInHarian() {
+      state.hariDiet = 2;
+      state.sudahCheckInHariIni = false;
+      updateAllViews();
+      showToast("Status Check-In berhasil direset kembali ke Hari ke-2.");
+    }
+
     function updateAllViews() {
       const firstName = state.user.nama.split(" ")[0];
       const initials = state.user.nama.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
@@ -1832,6 +1925,13 @@
       document.getElementById("profDisplayName").textContent = state.user.nama;
       document.getElementById("profDisplayEmail").textContent = state.user.email;
 
+      const setNamaEl = document.getElementById("setNamaInput");
+      const setEmailEl = document.getElementById("setEmailInput");
+      const setInfoHariEl = document.getElementById("setInfoHariDiet");
+      if (setNamaEl) setNamaEl.value = state.user.nama;
+      if (setEmailEl) setEmailEl.value = state.user.email;
+      if (setInfoHariEl) setInfoHariEl.textContent = `Tercatat sudah ${state.hariDiet} hari konsisten menjalankan diet`;
+
       // Update tampilan jumlah hari diet
       document.getElementById("badgeHariDiet").textContent = `Hari ke-${state.hariDiet} Diet`;
       document.getElementById("teksJumlahHari").textContent = `Sudah ${state.hariDiet} Hari`;
@@ -1839,6 +1939,9 @@
       if (state.sudahCheckInHariIni) {
         btnCheck.textContent = "Target Hari Ini Sudah Selesai";
         btnCheck.className = "btn btn-secondary";
+      } else {
+        btnCheck.textContent = "Check-In Target Hari Ini Selesai";
+        btnCheck.className = "btn btn-primary";
       }
 
       const tk = state.hasil.target_kalori;
