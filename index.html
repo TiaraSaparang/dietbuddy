@@ -762,7 +762,7 @@
             </div>
             <div class="field-error" id="errLoginPass"></div>
           </div>
-          <button class="btn btn-primary" onclick="handleLogin()">Masuk Sekarang &rarr;</button>
+          <button class="btn btn-primary" onclick="handleLogin()">Masuk Sekarang</button>
         </div>
 
         <!-- Form Register -->
@@ -789,7 +789,7 @@
             </div>
             <div class="field-error" id="errRegPass"></div>
           </div>
-          <button class="btn btn-primary" onclick="handleRegister()">Daftar Akun Baru &rarr;</button>
+          <button class="btn btn-primary" onclick="handleRegister()">Daftar Akun Baru</button>
         </div>
       </div>
     </div>
@@ -1020,12 +1020,20 @@
         </div>
 
         <div id="chatConsultSection" class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid var(--border-light);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid var(--border-light);">
             <div style="display:flex; align-items:center; gap:10px;">
               <div class="brand-icon-box" style="width:32px; height:32px; font-size:13px;">AI</div>
               <div>
                 <div class="h-sm">Dr. Buddy AI <span class="badge" style="margin-left:6px;">Nutritionist AI</span></div>
                 <div class="p-sm">Memahami target kalori & porsi makan aman sesuai profilmu</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <span class="badge" id="badgeKuotaChat" style="background:var(--surface-ice); color:var(--primary-deep); border:1px solid var(--border-blue); font-size:11.5px; padding:5px 12px;">
+                Kuota Konsultasi Gratis: Tersisa 3x Chat
+              </span>
+              <div style="font-size:11px; color:var(--text-muted); margin-top:4px;" id="subKuotaChat">
+                Akses konsultasi tanpa batas tersedia pada paket <b>Berlangganan Premium</b>
               </div>
             </div>
           </div>
@@ -1175,6 +1183,7 @@
       loggedIn: false,
       hariDiet: 2,
       sudahCheckInHariIni: false,
+      sisaChatGratis: 3,
       registeredUsers: JSON.parse(localStorage.getItem("dietbuddy_users_v2") || "[]"),
       user: {
         nama: "Tiara Saparang",
@@ -1522,8 +1531,17 @@
       if (!text) return;
 
       const box = document.getElementById("consultChatBox");
+      if (state.sisaChatGratis <= 0) {
+        box.innerHTML += `<div class="bubble bubble-ai" style="border-color:#F59E0B; background:#FFFBEB;"><b>Kuota Konsultasi Gratis Habis (0/3)</b><br>Masa percobaan 3 kali konsultasi AI gratis Anda telah selesai. Silakan beralih ke paket <b>Berlangganan Premium</b> (mulai Rp 25.000/bulan) untuk membuka akses konsultasi AI tanpa batas.</div>`;
+        box.scrollTop = box.scrollHeight;
+        showToast("Kuota 3x chat gratis sudah habis. Silakan berlangganan Premium untuk akses tanpa batas.");
+        return;
+      }
+
       box.innerHTML += `<div class="bubble bubble-user">${text}</div>`;
       input.value = "";
+      state.sisaChatGratis = state.sisaChatGratis - 1;
+      updateAllViews();
 
       const reply = await getAiConsultationReply(text);
       box.innerHTML += `<div class="bubble bubble-ai">${reply}</div>`;
@@ -1618,8 +1636,9 @@
     function resetCheckInHarian() {
       state.hariDiet = 2;
       state.sudahCheckInHariIni = false;
+      state.sisaChatGratis = 3;
       updateAllViews();
-      showToast("Status Check-In berhasil direset kembali ke Hari ke-2.");
+      showToast("Status Check-In dan kuota 3x chat gratis berhasil direset.");
     }
 
     function updateAllViews() {
@@ -1630,6 +1649,22 @@
       document.getElementById("topUserInitial").textContent = initials;
       const ringkasEl = document.getElementById("badgeRingkasData");
       if (ringkasEl) ringkasEl.textContent = `${state.dataDiri.berat_badan} kg • ${state.dataDiri.tinggi_badan} cm`;
+
+      // Update tampilan kuota chat AI gratis di bagian kanan header Konsultasi AI
+      const badgeKuota = document.getElementById("badgeKuotaChat");
+      if (badgeKuota) {
+        if (state.sisaChatGratis > 0) {
+          badgeKuota.textContent = `Kuota Konsultasi Gratis: Tersisa ${state.sisaChatGratis}x Chat`;
+          badgeKuota.style.background = "var(--surface-ice)";
+          badgeKuota.style.color = "var(--primary-deep)";
+          badgeKuota.style.borderColor = "var(--border-blue)";
+        } else {
+          badgeKuota.textContent = "Kuota Gratis Habis (0/3) • Wajib Berlangganan Premium";
+          badgeKuota.style.background = "#FEF2F2";
+          badgeKuota.style.color = "#DC2626";
+          badgeKuota.style.borderColor = "#FECACA";
+        }
+      }
 
       const setNamaEl = document.getElementById("setNamaInput");
       const setEmailEl = document.getElementById("setEmailInput");
