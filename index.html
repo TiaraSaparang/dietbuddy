@@ -990,9 +990,8 @@
               Check-In Target Hari Ini Selesai
             </button>
 
-            <div style="border-top:1px solid var(--border-light); padding-top:12px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-              <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="openOnboardingModal()">Isi Data via AI</button>
-              <button class="btn btn-outline btn-sm" style="width:100%;" onclick="navigateTo('profile')">Ubah Data Manual</button>
+            <div style="border-top:1px solid var(--border-light); padding-top:12px;">
+              <button class="btn btn-outline btn-sm" style="width:100%;" onclick="navigateTo('profile')">Ubah Data Diri & Target Diet (Manual)</button>
             </div>
           </div>
 
@@ -1009,21 +1008,14 @@
       </section>
 
       <!-- ===============================================================
-           HALAMAN 2: KONSULTASI AI & ISI DATA DIRI VIA AI
+           HALAMAN 2: KONSULTASI DIET AI
            =============================================================== -->
       <section class="page-view" id="screen-chat">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
-          <div>
-            <h1 class="h-xl" style="margin-bottom:4px;">Asisten Nutrisi DietBuddy AI</h1>
-            <p class="p-sm">Konsultasikan porsi makan harianmu atau isi data diri melalui percakapan interaktif.</p>
-          </div>
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-primary btn-sm" id="tabChatConsult" onclick="switchChatMode('consult')">Konsultasi Diet AI</button>
-            <button class="btn btn-outline btn-sm" id="tabChatOnboard" onclick="switchChatMode('onboard')">Pengisian Data Diri via AI</button>
-          </div>
+        <div style="margin-bottom:16px;">
+          <h1 class="h-xl" style="margin-bottom:4px;">Asisten Nutrisi DietBuddy AI</h1>
+          <p class="p-sm">Konsultasikan porsi makan harianmu dan tanyakan pengganti bahan makanan yang tersedia di rumah.</p>
         </div>
 
-        <!-- SUB-MODE 1: KONSULTASI DIET AI -->
         <div id="chatConsultSection" class="card">
           <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid var(--border-light);">
             <div style="display:flex; align-items:center; gap:10px;">
@@ -1047,75 +1039,6 @@
           <div style="display:flex; gap:8px;">
             <input type="text" id="consultInput" class="form-input" placeholder="Tanyakan apa saja seputar pengganti bahan makanan atau porsi dietmu..." onkeypress="if(event.key==='Enter') sendConsultMessage()" />
             <button class="btn btn-primary" style="width:auto; padding:0 22px;" onclick="sendConsultMessage()">Kirim</button>
-          </div>
-        </div>
-
-        <!-- SUB-MODE 2: PENGISIAN DATA DIRI VIA AI 2 KOLOM -->
-        <div id="chatOnboardSection" style="display:none;">
-          <div class="onboard-split-grid">
-            <!-- Kolom Kiri: Percakapan Onboarding -->
-            <div class="card">
-              <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid var(--border-light);">
-                <div>
-                  <div class="h-sm">Dr. Buddy AI — Metode Percakapan Cepat</div>
-                  <div class="p-sm">Menganalisis profil tubuh & tujuan bulananmu secara otomatis</div>
-                </div>
-                <button class="btn btn-outline btn-sm" onclick="startOnboardingChat()">Ulangi Chat</button>
-              </div>
-
-              <div class="chat-box" id="onboardChatBox"></div>
-
-              <div id="onboardQuickChips" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;"></div>
-
-              <div style="display:flex; gap:8px;" id="onboardInputRow">
-                <input type="text" id="onboardInput" class="form-input" placeholder="Ketik jawabanmu (contoh: mau turun 3 kilo per bulan)..." onkeypress="if(event.key==='Enter') sendOnboardAnswer()" />
-                <button class="btn btn-primary" style="width:auto; padding:0 20px;" onclick="sendOnboardAnswer()">Kirim</button>
-              </div>
-            </div>
-
-            <!-- Kolom Kanan: Ringkasan Data Diri Terdeteksi Secara Live -->
-            <div class="card">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                <div class="h-md">Ringkasan Data Diri Terdeteksi</div>
-                <span class="badge">Sinkron Otomatis</span>
-              </div>
-              <p class="p-sm" style="margin-bottom:14px;">Diekstraksi instan dari percakapanmu dengan AI.</p>
-
-              <div class="detected-grid">
-                <div class="detected-box">
-                  <div class="p-sm">Berat Badan</div>
-                  <div style="font-size:18px; font-weight:800; color:var(--text-dark);" id="detBB">62 kg</div>
-                </div>
-                <div class="detected-box">
-                  <div class="p-sm">Tinggi Badan</div>
-                  <div style="font-size:18px; font-weight:800; color:var(--text-dark);" id="detTB">160 cm</div>
-                </div>
-              </div>
-
-              <div class="detected-box" style="margin-bottom:10px; display:flex; justify-content:space-between;">
-                <span class="p-sm">Usia & Gender</span>
-                <span style="font-size:12.5px; font-weight:700;" id="detUmurGender">20 Tahun, Perempuan</span>
-              </div>
-
-              <div class="detected-box" style="margin-bottom:14px;">
-                <div class="p-sm">Target Program Terdeteksi</div>
-                <div style="font-size:13px; font-weight:800; color:var(--primary-deep); margin-top:2px;" id="detTarget">
-                  Turun Ideal & Aman (2 – 3 kg / bulan)
-                </div>
-              </div>
-
-              <div class="card-soft-blue" style="padding:14px; margin-bottom:14px; text-align:center;">
-                <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Estimasi Kalori Harian</div>
-                <div style="font-size:24px; font-weight:800; color:var(--primary-deep);" id="detKalori">~1.420 kkal/hari</div>
-              </div>
-
-              <button class="btn btn-primary" style="margin-bottom:8px;" onclick="confirmOnboardData()">
-                Konfirmasi & Hitung Kalori Sekarang
-              </button>
-              <button class="btn btn-outline" onclick="navigateTo('profile')">
-                Ubah Data Manual
-              </button>
-            </div>
           </div>
         </div>
       </section>
@@ -1587,25 +1510,7 @@
       navigateTo("home");
     }
 
-    // CHAT AI & ONBOARDING AI
-    function switchChatMode(mode) {
-      const btnConsult = document.getElementById("tabChatConsult");
-      const btnOnboard = document.getElementById("tabChatOnboard");
-      btnConsult.className = mode === "consult" ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
-      btnOnboard.className = mode === "onboard" ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
-
-      document.getElementById("chatConsultSection").style.display = mode === "consult" ? "block" : "none";
-      document.getElementById("chatOnboardSection").style.display = mode === "onboard" ? "block" : "none";
-      if (mode === "onboard" && onboardStep === 0) {
-        startOnboardingChat();
-      }
-    }
-
-    function openOnboardingModal() {
-      navigateTo("chat");
-      switchChatMode("onboard");
-    }
-
+    // CHAT KONSULTASI AI
     function initConsultChat() {
       const box = document.getElementById("consultChatBox");
       box.innerHTML = `
@@ -1678,193 +1583,6 @@
         `• <b>Selingan Sore:</b> ~${Math.round(state.hasil.target_kalori * 0.12)} kkal<br>` +
         `• <b>Makan Malam:</b> ~${Math.round(state.hasil.target_kalori * 0.28)} kkal<br><br>` +
         `Jika ada bahan makanan yang ingin kamu tanyakan porsi penggantinya (contoh: <i>"ganti ikan ke ayam"</i> atau <i>"di kulkas cuma ada telur dan tempe"</i>), silakan tulis di sini.`;
-    }
-
-    // ONBOARDING DATA DIRI VIA AI (DENGAN PANEL RINGKASAN LIVE DI KANAN)
-    let onboardStep = 0;
-    let tempOnboard = { bb: 62, tb: 160, umur: 20, gender: "Perempuan", delta: -450, target: "Turun Ideal & Aman (2 – 3 kg / bulan)" };
-
-    function updateDetectedPanel() {
-      document.getElementById("detBB").textContent = `${tempOnboard.bb} kg`;
-      document.getElementById("detTB").textContent = `${tempOnboard.tb} cm`;
-      document.getElementById("detUmurGender").textContent = `${tempOnboard.umur} Tahun, ${tempOnboard.gender}`;
-      document.getElementById("detTarget").textContent = tempOnboard.target;
-
-      let bmr = tempOnboard.gender === "Laki-laki"
-        ? Math.round(10 * tempOnboard.bb + 6.25 * tempOnboard.tb - 5 * tempOnboard.umur + 5)
-        : Math.round(10 * tempOnboard.bb + 6.25 * tempOnboard.tb - 5 * tempOnboard.umur - 161);
-      let minAman = tempOnboard.gender === "Laki-laki" ? 1500 : 1200;
-      let est = Math.max(minAman, Math.round(bmr * 1.375) + tempOnboard.delta);
-      document.getElementById("detKalori").textContent = `~${est.toLocaleString('id-ID')} kkal/hari`;
-    }
-
-    function renderOnboardQuickChips() {
-      const chipBox = document.getElementById("onboardQuickChips");
-      if (!chipBox) return;
-      if (onboardStep === 1) {
-        chipBox.innerHTML = [52, 58, 62, 70].map(n => `<button class="btn btn-secondary btn-sm" onclick="submitQuickOnboard('${n} kg')">${n} kg</button>`).join("");
-      } else if (onboardStep === 2) {
-        chipBox.innerHTML = [155, 160, 165, 170].map(n => `<button class="btn btn-secondary btn-sm" onclick="submitQuickOnboard('${n} cm')">${n} cm</button>`).join("");
-      } else if (onboardStep === 3) {
-        chipBox.innerHTML = [19, 20, 22, 25].map(n => `<button class="btn btn-secondary btn-sm" onclick="submitQuickOnboard('${n} tahun')">${n} thn</button>`).join("");
-      } else if (onboardStep === 4) {
-        chipBox.innerHTML = `
-          <button class="btn btn-secondary btn-sm" onclick="submitQuickOnboard('Perempuan')">Perempuan</button>
-          <button class="btn btn-secondary btn-sm" onclick="submitQuickOnboard('Laki-laki')">Laki-laki</button>
-        `;
-      } else if (onboardStep === 5) {
-        chipBox.innerHTML = `
-          <button class="btn btn-secondary btn-sm" onclick="submitQuickOnboard('Mau turun 1 kg sebulan')">Turun 1–1,5 kg/bln</button>
-          <button class="btn btn-secondary btn-sm" onclick="submitQuickOnboard('Mau turun 3 kilo per bulan')">Turun 2–3 kg/bln</button>
-          <button class="btn btn-secondary btn-sm" onclick="submitQuickOnboard('Mau jaga berat badan')">Pertahankan Berat</button>
-          <button class="btn btn-secondary btn-sm" onclick="submitQuickOnboard('Mau naik 2 kg sebulan')">Naikkan Berat 2–3 kg/bln</button>
-        `;
-      } else {
-        chipBox.innerHTML = "";
-      }
-    }
-
-    function submitQuickOnboard(text) {
-      document.getElementById("onboardInput").value = text;
-      sendOnboardAnswer();
-    }
-
-    function extractFirstNumber(str) {
-      const match = str.replace(",", ".").match(/\d+(\.\d+)?/);
-      return match ? parseFloat(match[0]) : NaN;
-    }
-
-    function parseNaturalGoalIntent(rawText) {
-      const v = rawText.toLowerCase().trim();
-      const numMatch = v.replace(",", ".").match(/\d+(\.\d+)?/);
-      const num = numMatch ? parseFloat(numMatch[0]) : null;
-
-      const isLoss = v.includes("turun") || v.includes("kurus") || v.includes("kurang") || v.includes("langsing") || v.includes("kecil") || v.includes("defisit");
-      const isGain = v.includes("naik") || v.includes("tambah") || v.includes("gemuk") || v.includes("berisi") || v.includes("surplus");
-      const isMaintain = v.includes("jaga") || v.includes("pertahan") || v.includes("stabil") || v.includes("tetap") || v.includes("maintenance");
-
-      if (isLoss) {
-        if (num !== null) {
-          if (num <= 1.8) return { delta: -300, target: "Turun Santai & Konsisten (1 – 1,5 kg / bulan)" };
-          if (num <= 3.2) return { delta: -450, target: "Turun Ideal & Aman (2 – 3 kg / bulan)" };
-          return { delta: -650, target: "Turun Intensif Terkontrol (3 – 4 kg / bulan)" };
-        }
-        return { delta: -450, target: "Turun Ideal & Aman (2 – 3 kg / bulan)" };
-      }
-
-      if (isGain) {
-        if (num !== null && num <= 1.8) return { delta: 300, target: "Naik Berat Bertahap & Sehat (1 – 2 kg / bulan)" };
-        return { delta: 500, target: "Naik Berat Ideal & Berisi (2 – 3 kg / bulan)" };
-      }
-
-      if (isMaintain) {
-        return { delta: 0, target: "Jaga Berat Badan Tetap Stabil (Maintenance)" };
-      }
-
-      if (v === "1") return { delta: -300, target: "Turun Santai & Konsisten (1 – 1,5 kg / bulan)" };
-      if (v === "2") return { delta: -450, target: "Turun Ideal & Aman (2 – 3 kg / bulan)" };
-      if (v === "3") return { delta: 0, target: "Jaga Berat Badan Tetap Stabil (Maintenance)" };
-      if (v === "4") return { delta: 500, target: "Naik Berat Ideal & Berisi (2 – 3 kg / bulan)" };
-
-      if (num !== null) {
-        if (num <= 1.8) return { delta: -300, target: "Turun Santai & Konsisten (1 – 1,5 kg / bulan)" };
-        if (num <= 3.2) return { delta: -450, target: "Turun Ideal & Aman (2 – 3 kg / bulan)" };
-        return { delta: -650, target: "Turun Intensif Terkontrol (3 – 4 kg / bulan)" };
-      }
-
-      return { delta: -450, target: "Turun Ideal & Aman (2 – 3 kg / bulan)" };
-    }
-
-    function startOnboardingChat() {
-      onboardStep = 1;
-      const box = document.getElementById("onboardChatBox");
-      box.innerHTML = `
-        <div class="bubble bubble-ai">
-          Halo! Kenalin aku Dr. Buddy AI. Biar rencana dietmu pas sasaran, yuk kita kenalan dulu.<br><br>Berapa <b>berat badanmu</b> sekarang (kg)?
-        </div>
-      `;
-      updateDetectedPanel();
-      renderOnboardQuickChips();
-    }
-
-    function sendOnboardAnswer() {
-      const inp = document.getElementById("onboardInput");
-      const val = inp.value.trim();
-      if (!val) return;
-      const box = document.getElementById("onboardChatBox");
-      box.innerHTML += `<div class="bubble bubble-user">${val}</div>`;
-      inp.value = "";
-
-      if (onboardStep === 1) {
-        const num = extractFirstNumber(val);
-        if (isNaN(num) || num < 25 || num > 300) {
-          box.innerHTML += `<div class="bubble bubble-ai">Mohon isi berat badan antara 25 – 300 kg (contoh: 62 kg).</div>`;
-        } else {
-          tempOnboard.bb = num;
-          onboardStep = 2;
-          box.innerHTML += `<div class="bubble bubble-ai">Dicatat <b>${num} kg</b>! Sekarang berapa <b>tinggi badanmu</b> (cm)?</div>`;
-        }
-      } else if (onboardStep === 2) {
-        const num = extractFirstNumber(val);
-        if (isNaN(num) || num < 100 || num > 250) {
-          box.innerHTML += `<div class="bubble bubble-ai">Mohon isi tinggi badan antara 100 – 250 cm (contoh: 160 cm).</div>`;
-        } else {
-          tempOnboard.tb = num;
-          onboardStep = 3;
-          box.innerHTML += `<div class="bubble bubble-ai">Oke, tinggi <b>${num} cm</b>. Berapa <b>umurmu</b> saat ini?</div>`;
-        }
-      } else if (onboardStep === 3) {
-        const num = Math.round(extractFirstNumber(val));
-        if (isNaN(num) || num < 12 || num > 100) {
-          box.innerHTML += `<div class="bubble bubble-ai">Mohon isi umur antara 12 – 100 tahun.</div>`;
-        } else {
-          tempOnboard.umur = num;
-          onboardStep = 4;
-          box.innerHTML += `<div class="bubble bubble-ai">Apa <b>jenis kelaminmu</b> (Perempuan / Laki-laki)?</div>`;
-        }
-      } else if (onboardStep === 4) {
-        const low = val.toLowerCase();
-        tempOnboard.gender = (low.includes("laki") || low.includes("pria") || low.includes("cowok")) ? "Laki-laki" : "Perempuan";
-        onboardStep = 5;
-        box.innerHTML += `<div class="bubble bubble-ai">Sip! Terakhir, apa <b>target diet utamamu</b> bersama DietBuddy? Ketik bebas saja (contoh: <i>"mau turun 3 kilo per bulan"</i>, <i>"pertahankan berat"</i>, atau <i>"naik 2 kg"</i>).</div>`;
-      } else if (onboardStep === 5) {
-        const parsed = parseNaturalGoalIntent(val);
-        tempOnboard.delta = parsed.delta;
-        tempOnboard.target = parsed.target;
-        onboardStep = 6;
-        box.innerHTML += `<div class="bubble bubble-ai">Berhasil dicatat! Targetmu masuk ke program <b>${tempOnboard.target}</b>.<br>Silakan klik tombol <b>Konfirmasi & Hitung Kalori Sekarang</b> di panel sebelah kanan!</div>`;
-      }
-      updateDetectedPanel();
-      renderOnboardQuickChips();
-      box.scrollTop = box.scrollHeight;
-    }
-
-    function confirmOnboardData() {
-      state.dataDiri.berat_badan = tempOnboard.bb;
-      state.dataDiri.tinggi_badan = tempOnboard.tb;
-      state.dataDiri.umur = tempOnboard.umur;
-      state.dataDiri.jenis_kelamin = tempOnboard.gender;
-      state.dataDiri.kalori_delta = tempOnboard.delta;
-      state.dataDiri.target_diet = tempOnboard.target;
-
-      document.getElementById("inputBB").value = tempOnboard.bb;
-      document.getElementById("inputTB").value = tempOnboard.tb;
-      document.getElementById("inputUmur").value = tempOnboard.umur;
-      document.getElementById("inputGender").value = tempOnboard.gender;
-
-      const selectGoal = document.getElementById("inputGoal");
-      for (let i = 0; i < selectGoal.options.length; i++) {
-        if (selectGoal.options[i].value.startsWith(String(tempOnboard.delta) + "|")) {
-          selectGoal.selectedIndex = i;
-          break;
-        }
-      }
-
-      calculateMetrics();
-      updateAllViews();
-      initConsultChat();
-      showToast(`Program "${tempOnboard.target}" berhasil diaktifkan!`);
-      navigateTo("home");
     }
 
     // FUNGSI SEDERHANA CHECK-IN HARI DIET (MUDAH DIJELASKAN SAAT PRESENTASI)
@@ -1958,7 +1676,6 @@
       document.getElementById("dispBmr").textContent = state.hasil.bmr.toLocaleString('id-ID');
       document.getElementById("dispTdee").textContent = state.hasil.tdee.toLocaleString('id-ID');
       document.getElementById("dispCatatanAman").textContent = state.hasil.catatan_aman;
-      updateDetectedPanel();
     }
 
     calculateMetrics();
