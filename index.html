@@ -976,33 +976,36 @@
           </div>
         </div>
 
-        <!-- Baris Bawah Beranda: Kiri Check-In Hari Diet & Pintasan Data Diri, Kanan Informasi Tahap Pengembangan -->
+        <!-- Baris Bawah Beranda: Kiri Check-In Konsistensi Harian, Kanan Ubah Data Diri & Target Diet -->
         <div class="beranda-bottom-grid">
-          <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <div class="h-md">Check-In Konsistensi Harian</div>
-              <span class="badge" id="teksJumlahHari">Sudah 2 Hari</span>
+          <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <div class="h-md">Check-In Konsistensi Harian</div>
+                <span class="badge" id="teksJumlahHari">Sudah 2 Hari</span>
+              </div>
+              <p class="p-sm" style="margin-bottom:14px;">
+                Klik tombol di bawah setelah kamu menyelesaikan target kalori hari ini untuk menambah catatan hari dietmu.
+              </p>
             </div>
-            <p class="p-sm" style="margin-bottom:14px;">
-              Klik tombol di bawah setelah kamu menyelesaikan target kalori hari ini untuk menambah catatan hari dietmu.
-            </p>
-            <button class="btn btn-primary" id="btnCheckIn" onclick="checkInHariIni()" style="margin-bottom:14px;">
+            <button class="btn btn-primary" id="btnCheckIn" onclick="checkInHariIni()">
               Check-In Target Hari Ini Selesai
             </button>
-
-            <div style="border-top:1px solid var(--border-light); padding-top:12px;">
-              <button class="btn btn-outline btn-sm" style="width:100%;" onclick="navigateTo('profile')">Ubah Data Diri & Target Diet (Manual)</button>
-            </div>
           </div>
 
-          <div class="card" style="background:var(--surface-ice); border-color:var(--border-blue);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <div class="h-md" style="color:var(--primary-deep);">Tahap Pengembangan Selanjutnya</div>
-              <span class="badge" style="background:#FFFFFF;">Segera Hadir</span>
+          <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <div class="h-md">Ubah Data Diri & Target Diet</div>
+                <span class="badge" id="badgeRingkasData">62 kg • 160 cm</span>
+              </div>
+              <p class="p-sm" style="margin-bottom:14px;">
+                Perbarui berat badan, tinggi badan, umur, tingkat aktivitas, serta program target bulananmu untuk menghitung ulang kalori harian.
+              </p>
             </div>
-            <p class="p-sm">
-              Modul <b>Rekomendasi Menu & Olahraga Harian</b>, <b>Riwayat Aktivitas</b>, <b>Pengingat Notifikasi</b>, serta <b>Langganan Premium</b> sedang dalam tahap pengembangan berikutnya menuju evaluasi akhir (UAS).
-            </p>
+            <button class="btn btn-secondary" style="width:100%;" onclick="navigateTo('profile')">
+              Ubah Data Diri & Target Diet
+            </button>
           </div>
         </div>
       </section>
@@ -1044,26 +1047,12 @@
       </section>
 
       <!-- ===============================================================
-           HALAMAN 3: PROFIL & INPUT DATA DIRI MANUAL (DIBUKA DARI NAMA KANAN ATAS)
+           HALAMAN 3: UBAH DATA DIRI & TARGET DIET
            =============================================================== -->
       <section class="page-view" id="screen-profile">
         <div style="max-width:680px;">
-          <h1 class="h-xl" style="margin-bottom:4px;">Profil & Data Diri</h1>
-          <p class="p-sm" style="margin-bottom:18px;">Kelola informasi akun dan perbarui data fisikmu untuk menghitung ulang BMI, BMR, dan TDEE.</p>
-
-          <!-- Kartu Informasi Akun -->
-          <div class="card" style="margin-bottom:18px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-              <div style="display:flex; align-items:center; gap:12px;">
-                <div class="user-avatar" style="width:44px; height:44px; font-size:16px;" id="profAvatar">TS</div>
-                <div>
-                  <div class="h-md" id="profDisplayName">Tiara Saparang</div>
-                  <div class="p-sm" id="profDisplayEmail">tiara@dietbuddy.id</div>
-                </div>
-              </div>
-              <button class="btn btn-outline btn-sm" onclick="handleLogout()">Keluar Akun</button>
-            </div>
-          </div>
+          <h1 class="h-xl" style="margin-bottom:4px;">Ubah Data Diri & Target Diet</h1>
+          <p class="p-sm" style="margin-bottom:18px;">Perbarui data fisik dan target program bulananmu untuk menghitung ulang BMI, BMR, TDEE, dan kebutuhan kalori harian.</p>
 
           <!-- Kartu Form Data Diri Diet -->
           <div class="card">
@@ -1639,9 +1628,8 @@
       document.getElementById("greetTitle").textContent = `Halo, ${firstName}!`;
       document.getElementById("topUserName").textContent = state.user.nama;
       document.getElementById("topUserInitial").textContent = initials;
-      document.getElementById("profAvatar").textContent = initials;
-      document.getElementById("profDisplayName").textContent = state.user.nama;
-      document.getElementById("profDisplayEmail").textContent = state.user.email;
+      const ringkasEl = document.getElementById("badgeRingkasData");
+      if (ringkasEl) ringkasEl.textContent = `${state.dataDiri.berat_badan} kg • ${state.dataDiri.tinggi_badan} cm`;
 
       const setNamaEl = document.getElementById("setNamaInput");
       const setEmailEl = document.getElementById("setEmailInput");
