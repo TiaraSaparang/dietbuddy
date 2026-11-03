@@ -1,50 +1,49 @@
-# DietBuddy — Pendamping Diet Sehat Berbasis AI
+# DietBuddy — Aplikasi Web Pendamping Diet & Kalkulasi Gizi Berbasis AI
 
 **Mata Kuliah:** Implementasi Perangkat Lunak (IPPL)  
 **Nama Mahasiswa:** Tiara Saparang  
 **NIM:** 11241085  
-**Tahap Pengumpulan:** Evaluasi Tengah Semester (UTS — Progres ~31,6%)
+**Tahap Evaluasi:** Presentasi Progres 50% Project IPPL (Realisasi Saat Ini: ~52,6%)
 
 ---
 
 ## 1. Deskripsi Singkat Aplikasi
-**DietBuddy** adalah aplikasi berbasis web yang membantu pengguna mengatur kebutuhan kalori harian untuk **menurunkan berat badan**, **menjaga berat badan ideal**, maupun **menaikkan berat badan** secara aman dan konsisten dengan bantuan **Google Gemini AI**.
+**DietBuddy** adalah aplikasi berbasis web yang membantu pengguna mengatur kebutuhan kalori harian untuk **menurunkan berat badan**, **menjaga berat badan tetap stabil**, maupun **menaikkan berat badan** secara aman dan konsisten sesuai rumus medis **Mifflin-St Jeor** serta didampingi fitur konsultasi gizi berbasis **AI**.
 
 ---
 
-## 2. Status Progres Implementasi (Tahap UTS: 6 dari 19 Use Case / ~31,6%)
+## 2. Kesesuaian Rencana & Realisasi Implementasi (Progres >50%)
 
-Sesuai ketentuan UTS (minimal progres 30% dari keseluruhan spesifikasi SRS & SDD), berikut rincian modul inti yang telah diimplementasikan pada tahap UTS beserta rencana pengembangan tahap selanjutnya menuju UAS:
+Berikut adalah rincian kesesuaian antara dokumen perancangan dengan fitur yang **telah selesai diimplementasikan (>50%)** serta fitur tahap selanjutnya menuju UAS:
 
-| Kode Use Case | Nama Fitur / Kebutuhan Fungsional | Status UTS |
-| :--- | :--- | :--- |
-| **UC-01** | Registrasi Akun Pengguna Baru | **Selesai (100%)** |
-| **UC-02** | Login & Logout Akun Pengguna | **Selesai (100%)** |
-| **UC-03** | Input & Ubah Data Diri Fisik Secara Manual (Melalui Profil) | **Selesai (100%)** |
-| **UC-04** | Input Data Diri melalui Percakapan AI | **Selesai (100%)** |
-| **UC-05** | Perhitungan Otomatis Indeks Massa Tubuh (BMI) | **Selesai (100%)** |
-| **UC-06 & UC-11** | Perhitungan Otomatis BMR, TDEE, Target Kalori & Konsultasi Diet AI | **Selesai (100%)** |
-| *UC-07 s/d UC-10* | *Rekomendasi Menu Harian, Olahraga & Pilihan Durasi Waktu* | *Tahap Berikutnya (Menuju UAS)* |
-| *UC-12 s/d UC-15* | *Motivasi Harian, Pencatatan & Riwayat Aktivitas, Streak* | *Tahap Berikutnya (Menuju UAS)* |
-| *UC-16* | *Pengaturan Notifikasi Pengingat Harian* | *Tahap Berikutnya (Menuju UAS)* |
-| *UC-17 s/d UC-19* | *Langganan Premium, Pembayaran & Panel Admin* | *Tahap Berikutnya (Menuju UAS)* |
+| No | Modul / Fitur Sistem | Status Implementasi | Keterangan Realisasi |
+| :--- | :--- | :--- | :--- |
+| **1** | **Registrasi Akun Pengguna Baru** (`UC-01`) | **Selesai (100%)** | Validasi nama, format email, password min. 8 karakter & ikon mata |
+| **2** | **Login & Logout Pengguna** (`UC-02`, `UC-03`) | **Selesai (100%)** | Cek akun belum terdaftar, validasi password & simpan di `localStorage` |
+| **3** | **Ubah Data Diri & Target Diet** (`UC-05`, `UC-06`) | **Selesai (100%)** | Input Berat, Tinggi, Umur, Gender, Aktivitas & Program Bulanan |
+| **4** | **Kalkulasi Otomatis BMI, BMR, TDEE & Kalori** (`UC-07`, `UC-08`) | **Selesai (100%)** | Rumus Mifflin-St Jeor & batas aman kalori minimal (1.200/1.500 kkal) |
+| **5** | **Rekomendasi Menu Makanan Harian** (`UC-09`) | **Selesai (100%)** | Susunan menu Sarapan, Siang, Selingan, Malam + Kuota Gratis 1x/hari |
+| **6** | **Check-In Konsistensi Harian** (`UC-12`) | **Selesai (100%)** | Pencatatan jumlah hari konsisten menjalankan target diet harian |
+| **7** | **Konsultasi Diet & Bahan Makanan via AI** (`UC-11`) | **Selesai (100%)** | Tanya jawab porsi & pengganti bahan makanan + Kuota Gratis 3x chat |
+| **8** | **Pengaturan Akun & Aplikasi** | **Selesai (100%)** | Ubah nama pengguna, ubah password baru, dan reset status harian |
+| *9* | *Riwayat Aktivitas & Catatan Kalori* | *Segera (Tahap UAS)* | *Grafik perkembangan berat badan & log riwayat kalori harian* |
+| *10* | *Berlangganan Premium & Simulasi Pembayaran* | *Segera (Tahap UAS)* | *Paket Premium 1 Bulan (Rp 25rb), 3 Bulan (Rp 65rb), 6 Bulan (Rp 100rb)* |
 
 ---
 
 ## 3. Struktur File Proyek
-- `index.html` — Antarmuka utama aplikasi Web (HTML5, CSS3 Soft Blue & Clean White, JavaScript).
+- `index.html` — Antarmuka utama aplikasi Web DietBuddy (HTML5, CSS3 Soft Sky Blue & Clean White, JavaScript).
 - `app.py` — *Entry point* aplikasi berbasis Python & Streamlit.
-- `models.py` — Implementasi *Class Diagram* berorientasi objek (`Pengguna`, `User`, `DataDiri`, `HasilPerhitungan`).
-- `database.py` — Modul basis data SQLite untuk tabel inti tahap UTS (`pengguna`, `data_diri`, `hasil_perhitungan`, `pesan_konsultasi`).
-- `gemini_service.py` — Modul layanan integrasi **Google Gemini API** (`LayananGemini`) untuk konsultasi gizi dan *onboarding* data diri via percakapan.
-- `manifest.json` & `sw.js` — Konfigurasi Web Manifest.
+- `models.py` — Implementasi *Class Diagram* (`Pengguna`, `DataDiri`, `HasilPerhitungan`, `MenuMakanan`).
+- `database.py` — Modul basis data SQLite (`pengguna`, `data_diri`, `hasil_perhitungan`, `rekomendasi_menu`, `pesan_konsultasi`).
+- `gemini_service.py` — Modul layanan respons konsultasi gizi dan pengganti bahan makanan.
 - `requirements.txt` — Daftar pustaka Python yang digunakan.
 
 ---
 
 ## 4. Cara Menjalankan Aplikasi
 1. **Melalui Browser Langsung:**  
-   Klik dua kali berkas `index.html` untuk membuka aplikasi langsung di Google Chrome / Microsoft Edge.
+   Buka file `index.html` di Google Chrome / Microsoft Edge, atau akses melalui GitHub Pages: `https://tiarasaparang.github.io/dietbuddy/`
 2. **Melalui Python Streamlit:**  
    ```bash
    pip install -r requirements.txt

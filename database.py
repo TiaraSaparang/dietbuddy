@@ -16,17 +16,18 @@ def hash_password(password: str) -> str:
 
 def init_db():
     """
-    Inisialisasi Database SQLite Progres UTS (~35%).
-    Hanya mencakup 4 tabel utama:
-    1. pengguna (Autentikasi Login & Registrasi)
-    2. data_diri (Input Data Diri Manual & via AI)
+    Inisialisasi Database SQLite Progres 50%+ Project IPPL.
+    Mencakup 5 tabel utama:
+    1. pengguna (Autentikasi Login, Registrasi, Check-In & Kuota Gratis)
+    2. data_diri (Input Data Diri & Target Diet Bulanan)
     3. hasil_perhitungan (Kalkulasi BMI, BMR, TDEE & Target Kalori)
-    4. pesan_konsultasi (Riwayat Chat Konsultasi AI)
+    4. rekomendasi_menu (Daftar Menu Sarapan, Siang, Selingan, Malam)
+    5. pesan_konsultasi (Riwayat Chat Konsultasi AI)
     """
     conn = get_connection()
     cur = conn.cursor()
 
-    # 1. Tabel Pengguna (UC-01, UC-02, UC-03)
+    # 1. Tabel Pengguna
     cur.execute("""
     CREATE TABLE IF NOT EXISTS pengguna (
         id_pengguna INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,11 +35,13 @@ def init_db():
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         hari_diet INTEGER DEFAULT 2,
-        sudah_checkin_hari_ini INTEGER DEFAULT 0
+        sudah_checkin_hari_ini INTEGER DEFAULT 0,
+        sisa_chat_gratis INTEGER DEFAULT 3,
+        sisa_menu_gratis INTEGER DEFAULT 1
     )
     """)
 
-    # 2. Tabel Data Diri (UC-04, UC-05, UC-06)
+    # 2. Tabel Data Diri
     cur.execute("""
     CREATE TABLE IF NOT EXISTS data_diri (
         id_data INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,13 +51,12 @@ def init_db():
         berat_badan REAL NOT NULL,
         tinggi_badan REAL NOT NULL,
         tingkat_aktivitas TEXT NOT NULL,
-        target_berat REAL NOT NULL,
         program_bulanan TEXT DEFAULT 'Turun Ideal & Aman (2 - 3 kg / bulan)',
         FOREIGN KEY (id_pengguna) REFERENCES pengguna(id_pengguna)
     )
     """)
 
-    # 3. Tabel Hasil Perhitungan BMI, BMR, TDEE (UC-07, UC-08)
+    # 3. Tabel Hasil Perhitungan BMI, BMR, TDEE
     cur.execute("""
     CREATE TABLE IF NOT EXISTS hasil_perhitungan (
         id_hasil INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,7 +70,18 @@ def init_db():
     )
     """)
 
-    # 4. Tabel Pesan Konsultasi AI (UC-04, UC-11)
+    # 4. Tabel Rekomendasi Menu Harian
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS rekomendasi_menu (
+        id_menu INTEGER PRIMARY KEY AUTOINCREMENT,
+        waktu_makan TEXT NOT NULL,
+        nama_menu TEXT NOT NULL,
+        deskripsi_porsi TEXT NOT NULL,
+        persentase_kalori REAL NOT NULL
+    )
+    """)
+
+    # 5. Tabel Pesan Konsultasi AI
     cur.execute("""
     CREATE TABLE IF NOT EXISTS pesan_konsultasi (
         id_pesan INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -79,27 +92,6 @@ def init_db():
         FOREIGN KEY (id_pengguna) REFERENCES pengguna(id_pengguna)
     )
     """)
-
-    # Data awal akun demo Tiara Saparang
-    cur.execute("SELECT COUNT(*) as c FROM pengguna WHERE email = ?", ("tiara@itk.ac.id",))
-    if cur.fetchone()["c"] == 0:
-        cur.execute(
-            "INSERT INTO pengguna (nama, email, password, hari_diet, sudah_checkin_hari_ini) VALUES (?, ?, ?, ?, ?)",
-            ("Tiara Saparang", "tiara@itk.ac.id", hash_password("tiara12345"), 2, 0),
-        )
-        uid = cur.lastrowid
-        cur.execute(
-            """INSERT INTO data_diri 
-               (id_pengguna, usia, jenis_kelamin, berat_badan, tinggi_badan, tingkat_aktivitas, target_berat, program_bulanan)
-               VALUES (?, 20, 'Perempuan', 63.0, 160.0, 'Ringan (Olahraga 1-3x/minggu)', 55.0, 'Turun Ideal & Aman (2 - 3 kg / bulan)')""",
-            (uid,),
-        )
-        cur.execute(
-            """INSERT INTO hasil_perhitungan
-               (id_pengguna, bmi, status_bmi, bmr, tdee, rekomendasi_kalori)
-               VALUES (?, 24.6, 'Overweight Ringan', 1411, 1940, 1440)""",
-            (uid,),
-        )
 
     conn.commit()
     conn.close()
