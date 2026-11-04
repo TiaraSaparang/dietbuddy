@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -67,22 +67,24 @@
           <p class="p-sm">Masuk untuk melanjutkan rencana nutrisi harianmu.</p>
         </div>
 
-        <div class="pill-tabs">
+        <div class="pill-tabs" id="authTabsContainer">
           <button class="pill-tab active" id="tabBtnLogin" onclick="switchAuthTab('login')">Masuk</button>
           <button class="pill-tab" id="tabBtnRegister" onclick="switchAuthTab('register')">Daftar Akun</button>
         </div>
 
-        <!-- Form Login (Kosong Tanpa Isi Otomatis) -->
+        <!-- Form Login -->
         <div id="formLogin">
           <div class="form-group">
             <label class="form-label">Email</label>
-            <input type="email" id="loginEmail" class="form-input" placeholder="Email" autocomplete="off" oninput="validateEmailField('loginEmail', 'errLoginEmail')" />
+            <input type="email" id="loginEmail" list="registeredEmailsList" class="form-input" placeholder="Pilih atau ketik email" autocomplete="off" oninput="validateEmailField('loginEmail', 'errLoginEmail')" />
+            <datalist id="registeredEmailsList"></datalist>
+            <div id="emailSuggestionsWrap"></div>
             <div class="field-error" id="errLoginEmail"></div>
           </div>
-          <div class="form-group" style="margin-bottom:20px;">
+          <div class="form-group" style="margin-bottom:8px;">
             <label class="form-label">Password</label>
             <div class="pass-wrap">
-              <input type="password" id="loginPassword" class="form-input" placeholder="Password" autocomplete="new-password" oninput="validatePassField('loginPassword', 'errLoginPass')" />
+              <input type="password" id="loginPassword" class="form-input" placeholder="Password" autocomplete="current-password" oninput="validatePassField('loginPassword', 'errLoginPass')" />
               <button type="button" class="pass-eye-btn" onclick="togglePassword('loginPassword', 'eyeLogin')" title="Lihat / Sembunyikan Password">
                 <svg id="eyeLogin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
@@ -91,6 +93,11 @@
             </div>
             <div class="field-error" id="errLoginPass"></div>
           </div>
+
+          <div style="display:flex; justify-content:flex-end; margin-bottom:18px;">
+            <a href="javascript:void(0)" onclick="switchAuthTab('forgot')" style="font-size:12.5px; font-weight:600; color:var(--primary-blue); text-decoration:none;">Lupa Password?</a>
+          </div>
+
           <button class="btn btn-primary" onclick="handleLogin()">Masuk Sekarang</button>
         </div>
 
@@ -109,7 +116,7 @@
           <div class="form-group" style="margin-bottom:20px;">
             <label class="form-label">Password</label>
             <div class="pass-wrap">
-              <input type="password" id="regPassword" class="form-input" placeholder="Password" autocomplete="new-password" oninput="validatePassField('regPassword', 'errRegPass')" />
+              <input type="password" id="regPassword" class="form-input" placeholder="Password (minimal 8 karakter)" autocomplete="new-password" oninput="validatePassField('regPassword', 'errRegPass')" />
               <button type="button" class="pass-eye-btn" onclick="togglePassword('regPassword', 'eyeReg')" title="Lihat / Sembunyikan Password">
                 <svg id="eyeReg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
@@ -119,6 +126,49 @@
             <div class="field-error" id="errRegPass"></div>
           </div>
           <button class="btn btn-primary" onclick="handleRegister()">Daftar Akun Baru</button>
+        </div>
+
+        <!-- Form Lupa Password -->
+        <div id="formForgotPassword" style="display:none;">
+          <div style="background:var(--surface-soft-blue); border:1px solid var(--border-blue); padding:12px 14px; border-radius:12px; margin-bottom:16px;">
+            <div style="font-weight:700; font-size:13px; color:var(--text-blue-dark); margin-bottom:3px;">Atur Ulang Password</div>
+            <div style="font-size:12px; color:var(--text-body); line-height:1.4;">Pilih atau ketik email akunmu, lalu buat password baru (minimal 8 karakter).</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Akun Terdaftar</label>
+            <input type="email" id="forgotEmail" list="registeredEmailsList" class="form-input" placeholder="Pilih atau ketik email" autocomplete="off" oninput="validateEmailField('forgotEmail', 'errForgotEmail')" />
+            <div class="field-error" id="errForgotEmail"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password Baru (Min. 8 Karakter)</label>
+            <div class="pass-wrap">
+              <input type="password" id="forgotNewPass" class="form-input" placeholder="Password baru" autocomplete="new-password" oninput="validatePassField('forgotNewPass', 'errForgotPass')" />
+              <button type="button" class="pass-eye-btn" onclick="togglePassword('forgotNewPass', 'eyeForgotNew')" title="Lihat / Sembunyikan Password">
+                <svg id="eyeForgotNew" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <div class="field-error" id="errForgotPass"></div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:20px;">
+            <label class="form-label">Konfirmasi Password Baru</label>
+            <div class="pass-wrap">
+              <input type="password" id="forgotConfirmPass" class="form-input" placeholder="Ulangi password baru" autocomplete="new-password" oninput="validateForgotConfirmPass()" />
+              <button type="button" class="pass-eye-btn" onclick="togglePassword('forgotConfirmPass', 'eyeForgotConfirm')" title="Lihat / Sembunyikan Password">
+                <svg id="eyeForgotConfirm" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <div class="field-error" id="errForgotConfirm"></div>
+          </div>
+
+          <button class="btn btn-primary" onclick="handleResetPassword()" style="margin-bottom:10px;">Simpan Password Baru</button>
+          <button class="btn btn-outline" onclick="switchAuthTab('login')">Batal & Kembali ke Masuk</button>
         </div>
       </div>
     </div>

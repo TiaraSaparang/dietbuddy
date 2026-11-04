@@ -2,6 +2,21 @@
    FILE: script.js
    FUNGSI: Mengatur Logika Validasi Login, Rumus BMI/BMR/TDEE, Rekomendasi Menu, dan Chat AI
    ===================================================================== */
+    let savedInitialUsers = [];
+    try {
+      savedInitialUsers = JSON.parse(localStorage.getItem("dietbuddy_users_v2") || "[]");
+    } catch(e) {
+      savedInitialUsers = [];
+    }
+    if (!Array.isArray(savedInitialUsers) || savedInitialUsers.length === 0) {
+      savedInitialUsers = [
+        { nama: "Tiara Saparang", email: "tiara@dietbuddy.id", password: "password123" }
+      ];
+      try {
+        localStorage.setItem("dietbuddy_users_v2", JSON.stringify(savedInitialUsers));
+      } catch (e) {}
+    }
+
     let state = {
       loggedIn: false,
       hariDiet: 2,
@@ -11,7 +26,7 @@
       indeksPaketMenu: 0,
       lastTopicFood: "ikan",
       fallbackCounter: 0,
-      registeredUsers: JSON.parse(localStorage.getItem("dietbuddy_users_v2") || "[]"),
+      registeredUsers: savedInitialUsers,
       user: {
         nama: "Tiara Saparang",
         email: "tiara@dietbuddy.id"
@@ -223,20 +238,146 @@
       return setFieldError("regName", "errRegName", "");
     }
 
+    // RENDER DAFTAR EMAIL TERDAFTAR (DATALIST & PILIHAN TOMBOL AKUN CEPAT)
+    function renderEmailSuggestions() {
+      const listEl = document.getElementById("registeredEmailsList");
+      const wrapEl = document.getElementById("emailSuggestionsWrap");
+      if (!listEl) return;
+
+      listEl.innerHTML = "";
+      if (wrapEl) wrapEl.innerHTML = "";
+
+      const users = state.registeredUsers || [];
+      if (users.length === 0) return;
+
+      // 1. Masukkan ke Datalist bawaan browser
+      users.forEach(u => {
+        const opt = document.createElement("option");
+        opt.value = u.email;
+        opt.label = `${u.nama} (${u.email})`;
+        listEl.appendChild(opt);
+      });
+
+      // 2. Tampilkan pil tombol akun tersimpan jika ada akun terdaftar
+      if (wrapEl) {
+        const container = document.createElement("div");
+        container.className = "email-suggestions-box";
+
+        const label = document.createElement("div");
+        label.style.fontSize = "11px";
+        label.style.color = "var(--text-muted)";
+        label.style.fontWeight = "600";
+        label.style.width = "100%";
+        label.style.marginTop = "4px";
+        label.textContent = "Pilihan Akun Terdaftar (Klik untuk memilih):";
+        container.appendChild(label);
+
+        users.forEach(u => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "email-badge-pill";
+          btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> ${u.email}`;
+          btn.onclick = () => selectLoginEmail(u.email);
+          container.appendChild(btn);
+        });
+        wrapEl.appendChild(container);
+      }
+    }
+
+    function selectLoginEmail(email) {
+      const inp = document.getElementById("loginEmail");
+      if (inp) {
+        inp.value = email;
+        validateEmailField("loginEmail", "errLoginEmail");
+      }
+      const passInp = document.getElementById("loginPassword");
+      if (passInp) passInp.focus();
+    }
+
     function switchAuthTab(mode) {
-      document.getElementById("tabBtnLogin").classList.toggle("active", mode === "login");
-      document.getElementById("tabBtnRegister").classList.toggle("active", mode === "register");
-      document.getElementById("formLogin").style.display = mode === "login" ? "block" : "none";
-      document.getElementById("formRegister").style.display = mode === "register" ? "block" : "none";
+      const tabWrap = document.getElementById("authTabsContainer");
+      const formLog = document.getElementById("formLogin");
+      const formReg = document.getElementById("formRegister");
+      const formForgot = document.getElementById("formForgotPassword");
+
+      if (mode === "forgot") {
+        if (tabWrap) tabWrap.style.display = "none";
+        if (formLog) formLog.style.display = "none";
+        if (formReg) formReg.style.display = "none";
+        if (formForgot) formForgot.style.display = "block";
+
+        // Salin email dari form login jika sebelumnya sudah diketik/dipilih
+        const currentEmail = document.getElementById("loginEmail") ? document.getElementById("loginEmail").value.trim() : "";
+        const forgotInp = document.getElementById("forgotEmail");
+        if (forgotInp && currentEmail) {
+          forgotInp.value = currentEmail;
+        }
+      } else {
+        if (tabWrap) tabWrap.style.display = "flex";
+        document.getElementById("tabBtnLogin").classList.toggle("active", mode === "login");
+        document.getElementById("tabBtnRegister").classList.toggle("active", mode === "register");
+        if (formLog) formLog.style.display = mode === "login" ? "block" : "none";
+        if (formReg) formReg.style.display = mode === "register" ? "block" : "none";
+        if (formForgot) formForgot.style.display = "none";
+      }
+
       // Bersihkan pesan error saat berpindah tab
-      ["loginEmail", "loginPassword", "regName", "regEmail", "regPassword"].forEach(id => {
+      ["loginEmail", "loginPassword", "regName", "regEmail", "regPassword", "forgotEmail", "forgotNewPass", "forgotConfirmPass"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.remove("input-invalid");
       });
-      ["errLoginEmail", "errLoginPass", "errRegName", "errRegEmail", "errRegPass"].forEach(id => {
+      ["errLoginEmail", "errLoginPass", "errRegName", "errRegEmail", "errRegPass", "errForgotEmail", "errForgotPass", "errForgotConfirm"].forEach(id => {
         const el = document.getElementById(id);
         if (el) { el.textContent = ""; el.classList.remove("show"); }
       });
+    }
+
+    function validateForgotConfirmPass() {
+      const p1 = document.getElementById("forgotNewPass").value.trim();
+      const p2 = document.getElementById("forgotConfirmPass").value.trim();
+      if (!p2) {
+        return setFieldError("forgotConfirmPass", "errForgotConfirm", "Konfirmasi password wajib diisi.");
+      }
+      if (p1 !== p2) {
+        return setFieldError("forgotConfirmPass", "errForgotConfirm", "Konfirmasi password tidak cocok dengan password baru.");
+      }
+      return setFieldError("forgotConfirmPass", "errForgotConfirm", "");
+    }
+
+    function handleResetPassword() {
+      const validEmail = validateEmailField("forgotEmail", "errForgotEmail");
+      const validPass = validatePassField("forgotNewPass", "errForgotPass");
+      const validConfirm = validateForgotConfirmPass();
+      if (!validEmail || !validPass || !validConfirm) return;
+
+      const email = document.getElementById("forgotEmail").value.trim().toLowerCase();
+      const newPass = document.getElementById("forgotNewPass").value.trim();
+
+      const foundUser = state.registeredUsers.find(u => u.email.toLowerCase() === email);
+      if (!foundUser) {
+        setFieldError("forgotEmail", "errForgotEmail", "Email tidak terdaftar! Silakan periksa kembali email akunmu.");
+        showToast("Email tidak ditemukan dalam daftar akun terdaftar.");
+        return;
+      }
+
+      // Update password baru di state & localStorage
+      foundUser.password = newPass;
+      try {
+        localStorage.setItem("dietbuddy_users_v2", JSON.stringify(state.registeredUsers));
+      } catch (e) {}
+
+      // Otomatis isikan ke form login
+      const loginEmailInp = document.getElementById("loginEmail");
+      const loginPassInp = document.getElementById("loginPassword");
+      if (loginEmailInp) loginEmailInp.value = email;
+      if (loginPassInp) loginPassInp.value = newPass;
+
+      // Bersihkan form forgot
+      document.getElementById("forgotNewPass").value = "";
+      document.getElementById("forgotConfirmPass").value = "";
+
+      showToast(`Password untuk ${email} berhasil diperbarui! Silakan klik Masuk Sekarang.`);
+      switchAuthTab("login");
     }
 
     function handleRegister() {
@@ -263,14 +404,26 @@
         localStorage.setItem("dietbuddy_users_v2", JSON.stringify(state.registeredUsers));
       } catch (e) {}
 
+      // Perbarui dropdown dan pil pilihan email
+      renderEmailSuggestions();
+
+      // Bersihkan form pendaftaran
       document.getElementById("regName").value = "";
       document.getElementById("regEmail").value = "";
       document.getElementById("regPassword").value = "";
-      document.getElementById("loginEmail").value = "";
-      document.getElementById("loginPassword").value = "";
 
-      showToast("Pendaftaran akun berhasil! Silakan masuk menggunakan email dan password Anda.");
+      // Otomatis isikan email yang baru didaftarkan ke kolom login!
+      const loginEmailInp = document.getElementById("loginEmail");
+      const loginPassInp = document.getElementById("loginPassword");
+      if (loginEmailInp) {
+        loginEmailInp.value = email;
+        validateEmailField("loginEmail", "errLoginEmail");
+      }
+      if (loginPassInp) loginPassInp.value = "";
+
+      showToast(`Pendaftaran akun "${email}" berhasil! Email sudah otomatis terisi, silakan masukkan password Anda.`);
       switchAuthTab("login");
+      if (loginPassInp) setTimeout(() => loginPassInp.focus(), 250);
     }
 
     function handleLogin() {
@@ -311,6 +464,8 @@
       state.loggedIn = false;
       document.getElementById("dashboardLayout").classList.remove("active");
       document.getElementById("authWrapper").style.display = "flex";
+      renderEmailSuggestions();
+      switchAuthTab("login");
       showToast("Berhasil keluar dari akun.");
     }
 
@@ -824,3 +979,4 @@
     calculateMetrics();
     updateAllViews();
     initConsultChat();
+    renderEmailSuggestions();
