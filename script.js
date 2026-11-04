@@ -355,12 +355,13 @@
 
     // CHAT KONSULTASI AI
     function initConsultChat() {
+      const firstName = state.user.nama.split(" ")[0];
       const box = document.getElementById("consultChatBox");
       box.innerHTML = `
         <div class="bubble bubble-ai">
-          Halo <b>${state.user.nama}</b>! Aku Dr. Buddy AI.<br>
-          Program aktifmu saat ini: <b>${state.dataDiri.target_diet}</b> dengan sasaran <b>${state.hasil.target_kalori} kkal/hari</b>.<br><br>
-          Silakan tanyakan apa saja seputar pengganti bahan makanan (misalnya <i>ganti ikan ke ayam, telur, atau tempe</i>) atau pembagian porsi makan yang aman sesuai bahan yang ada di rumahmu.
+          Hai <b>${firstName}</b>! Senang banget bisa nemenin perjalanan diet sehatmu hari ini.<br>
+          Saat ini kamu lagi fokus di program <b>${state.dataDiri.target_diet}</b> dengan target <b>${state.hasil.target_kalori} kkal/hari</b>.<br><br>
+          Jangan sungkan cerita atau tanya apa aja ke aku ya! Mau tanya soal <i>tukar bahan makanan di kulkas, pengen jajan bakso/seblak, tips olahraga,</i> atau lagi lapar malam hari? Yuk, ketik aja di bawah!
         </div>
       `;
     }
@@ -377,7 +378,7 @@
 
       const box = document.getElementById("consultChatBox");
       if (state.sisaChatGratis <= 0) {
-        box.innerHTML += `<div class="bubble bubble-ai" style="border-color:#F59E0B; background:#FFFBEB;"><b>Kuota Konsultasi Gratis Habis (0/3)</b><br>Masa percobaan 3 kali konsultasi AI gratis Anda telah selesai. Silakan beralih ke paket <b>Berlangganan Premium</b> (mulai Rp 25.000/bulan) untuk membuka akses konsultasi AI tanpa batas.</div>`;
+        box.innerHTML += `<div class="bubble bubble-ai" style="border-color:#F59E0B; background:#FFFBEB;"><b>Kuota Konsultasi Gratis Habis (0/3)</b><br>Wah, jatah 3 kali ngobrol gratis kamu hari ini udah kepakai semua nih. Yuk, aktifkan paket <b>Berlangganan Premium</b> (mulai Rp 25.000/bulan) biar kita bisa lanjut konsultasi sepuasnya tanpa batas!</div>`;
         box.scrollTop = box.scrollHeight;
         showToast("Kuota 3x chat gratis sudah habis. Silakan berlangganan Premium untuk akses tanpa batas.");
         return;
@@ -388,12 +389,16 @@
       state.sisaChatGratis = state.sisaChatGratis - 1;
       updateAllViews();
 
-      // Tampilkan indikator sedang mengetik sementara
+      // Tampilkan indikator sedang berpikir (jeda ~1.8 detik agar terasa alami seperti sedang mengetik)
       const loadingId = "ai-loading-" + Date.now();
-      box.innerHTML += `<div class="bubble bubble-ai" id="${loadingId}" style="color:var(--text-muted); font-style:italic;">Dr. Buddy AI sedang menganalisis pertanyaanmu...</div>`;
+      box.innerHTML += `<div class="bubble bubble-ai" id="${loadingId}" style="color:var(--text-muted); font-style:italic;">Dr. Buddy AI sedang berpikir & menyiapkan saran terbaik buatmu...</div>`;
       box.scrollTop = box.scrollHeight;
 
-      const reply = await getAiConsultationReply(text);
+      const [reply] = await Promise.all([
+        getAiConsultationReply(text),
+        new Promise(resolve => setTimeout(resolve, 1800))
+      ]);
+
       const loadingEl = document.getElementById(loadingId);
       if (loadingEl) {
         loadingEl.style.color = "";
@@ -407,6 +412,7 @@
 
     async function getAiConsultationReply(question) {
       const q = question.toLowerCase().trim();
+      const firstName = state.user.nama.split(" ")[0];
       const allKeys = Object.keys(foodSubstituteDB);
       const mentionedFoods = allKeys.filter(k => q.includes(k));
       const tk = state.hasil.target_kalori;
@@ -423,10 +429,10 @@
         const fromFood = foodSubstituteDB[fromKey];
         const toFood = foodSubstituteDB[toKey];
 
-        return `Tentu bisa! Kamu <b>tidak perlu mengubah seluruh pola makan harianmu</b>, cukup ganti <b>${fromFood.nama}</b> dengan <b>${toFood.nama}</b> yang kamu inginkan:<br><br>` +
-          `1. <b>Takaran Porsi Pengganti yang Aman:</b> Gunakan <b>${toFood.porsiAman}</b> untuk porsi makan utamamu (~${mealCal} kkal).<br>` +
-          `2. <b>Cara Pengolahan:</b> Sebaiknya ${toFood.caraMasak} agar kalorinya tetap pas dengan sasaran <b>${tk} kkal/hari</b>.<br>` +
-          `3. <b>Pendamping Tetap Sama:</b> Sayuran dan karbohidrat pendamping tetap bisa dikonsumsi sesuai jadwal.`;
+        return `Bisa banget dong, <b>${firstName}</b>! Diet itu gak boleh ribet kok. Kamu cukup tukar lauk <b>${fromFood.nama}</b> pakai <b>${toFood.nama}</b> aja:<br><br>` +
+          `• <b>Porsi Pas Buatmu:</b> Pakai sekitar <b>${toFood.porsiAman}</b> buat sekali makan utama (~${mealCal} kkal).<br>` +
+          `• <b>Tips Masaknya:</b> Biar tetap enak tapi hemat kalori, coba ${toFood.caraMasak} ya.<br><br>` +
+          `Nasi dan sayurannya tetap lanjut kayak biasa. Semangat terus ya, kamu keren banget udah jaga porsi makanmu hari ini!`;
       }
 
       // 2. CEK PERTANYAAN TENTANG BAHAN MAKANAN SPESIFIK DI KULKAS / PORSI MAKANAN
@@ -435,63 +441,62 @@
         const foodInfo = foodSubstituteDB[chosenKey];
         const listBahanText = mentionedFoods.map(k => `<b>${foodSubstituteDB[k].nama}</b> (${foodSubstituteDB[k].porsiAman})`).join(" + ");
 
-        return `Mengenai <b>${foodInfo.nama}</b> yang kamu tanyakan, bahan tersebut sangat bagus untuk mendukung target <b>${tk} kkal/hari</b> kamu:<br><br>` +
-          `• <b>Takaran Porsi Aman:</b> ${listBahanText}.<br>` +
-          `• <b>Cara Pengolahan Terbaik:</b> Sebaiknya ${foodInfo.caraMasak}.<br>` +
-          `• <b>Tips:</b> Padukan dengan sayuran hijau agar perut kenyang lebih lama dan pencernaan lancar.`;
+        return `Wah, pilihan bagus itu <b>${firstName}</b>! Bahan yang ada di rumahmu justru sehat dan pas banget buat ngejar target <b>${tk} kkal/hari</b>:<br><br>` +
+          `• <b>Takaran Porsi Amannya:</b> Cukup gunakan ${listBahanText}.<br>` +
+          `• <b>Cara Masak Biar Tetap Nikmat:</b> Enaknya ${foodInfo.caraMasak}.<br><br>` +
+          `Jangan lupa tambahin sayur hijau biar makin kenyang ya. Yuk, lanjut terus progres positifmu!`;
       }
 
       // 3. CEK PERTANYAAN TENTANG JAJANAN / MAKANAN FAVORIT (BAKSO, SEBLAK, GORENGAN, MIE AYAM, NASI PADANG, MARTABAK, ES KRIM, COKLAT)
       const jajananMap = [
-        { keys: ["gorengan", "bakwan", "risol", "tempe goreng", "ayam goreng"], nama: "Gorengan / Makanan Digoreng", kal: "130–180 kkal per potong", tips: "Batasi maksimal <b>1 potong</b> saja dan tiriskan minyaknya dengan tisu makanan, atau ganti cara masaknya menggunakan teflon/air fryer tanpa minyak." },
-        { keys: ["bakso", "pentol", "cilok", "soto"], nama: "Bakso / Kuah Hangat", kal: "320–400 kkal per mangkuk", tips: "Pilih <b>bakso daging tanpa tetelan lemak</b>, kurangi porsi mie/bihun menjadi setengah, perbanyak sayur sawi/tauge, dan jangan habiskan seluruh kuahnya untuk mengurangi natrium (garam)." },
-        { keys: ["seblak", "pedas", "mie instan", "indomie", "mie ayam", "ramen"], nama: "Seblak / Mie Berbumbu", kal: "380–480 kkal per porsi", tips: "Kamu tetap boleh makan sesekali (maksimal 1x seminggu), tetapi gunakan <b>setengah takaran bumbu/minyak</b>, kurangi kerupuk aci, dan tambahkan <b>1–2 butir telur rebus serta sayur sawi</b> agar gizinya seimbang." },
-        { keys: ["padang", "rendang", "sate", "nasi goreng", "pecel", "gado"], nama: "Makanan Berbumbu / Santan", kal: "450–600 kkal per porsi", tips: "Minta <b>nasi setengah porsi saja</b>, pilih lauk ayam bakar/ikan bakar dibanding kuah santan kental, dan perbanyak sayur rebus/mentimun." },
-        { keys: ["manis", "coklat", "es krim", "kue", "martabak", "roti bakar", "donat", "biskuit"], nama: "Camilan Manis / Dessert", kal: "200–350 kkal per porsi", tips: "Ambil porsi kecil (sharing atau 1–2 gigitan) setelah makan siang agar gula darah tidak melonjak tajam, lalu imbangi dengan minum air putih hangat." }
+        { keys: ["gorengan", "bakwan", "risol", "tempe goreng", "ayam goreng"], nama: "Gorengan", kal: "130–180 kkal per potong", tips: "Cukup icip <b>1 potong aja</b> buat obat kangen, tiriskan minyaknya pakai tisu, atau lebih mantap lagi kalau dipanggang di teflon!" },
+        { keys: ["bakso", "pentol", "cilok", "soto"], nama: "Bakso / Makanan Berkuah", kal: "320–400 kkal per mangkuk", tips: "Pilih <b>bakso daging tanpa gajih/lemak</b>, minta bihunnya setengah porsi aja, banyakin sayur sawinya, dan kuahnya jangan dihabisin semua ya biar gak kebanyakan garam." },
+        { keys: ["seblak", "pedas", "mie instan", "indomie", "mie ayam", "ramen"], nama: "Seblak / Mie Favoritmu", kal: "380–480 kkal per porsi", tips: "Boleh kok sesekali (maksimal 1x seminggu), triknya pakai <b>bumbu setengah aja</b>, kurangi kerupuknya, terus tambahin <b>telur rebus + sayur sawi yang banyak</b> biar tetap mengenyangkan!" },
+        { keys: ["padang", "rendang", "sate", "nasi goreng", "pecel", "gado"], nama: "Menu Berbumbu / Nasi Padang", kal: "450–600 kkal per porsi", tips: "Ambil <b>nasinya setengah porsi aja</b>, pilih lauk ayam bakar/ikan bakar tanpa kuah santan kental, dan perbanyak lalapan timun atau sayur rebusnya." },
+        { keys: ["manis", "coklat", "es krim", "kue", "martabak", "roti bakar", "donat", "biskuit"], nama: "Camilan Manis", kal: "200–350 kkal per porsi", tips: "Makan <b>1–2 potong kecil aja setelah makan siang</b> (jangan pas perut kosong), lalu minum segelas air putih hangat." }
       ];
       for (const item of jajananMap) {
         if (item.keys.some(k => q.includes(k))) {
-          return `Menjawab pertanyaanmu tentang <b>${item.nama}</b> (~${item.kal}):<br><br>` +
-            `Saat menjalani program <b>${state.dataDiri.target_diet}</b> (target <b>${tk} kkal/hari</b>), kamu <b>tetap boleh mengonsumsinya secara terkontrol</b> dengan aturan aman berikut:<br>` +
-            `• <b>Tips Porsi Aman:</b> ${item.tips}<br>` +
-            `• <b>Penyesuaian Harian:</b> Jika sudah mengonsumsi menu ini di siang hari, pilih menu makan malam yang lebih ringan seperti protein kukus/rebus dan sayur bening.`;
+          return `Tenang aja <b>${firstName}</b>, diet bareng DietBuddy itu gak boleh bikin kamu stres! Kalau lagi pengen <b>${item.nama}</b> (~${item.kal}), <b>boleh banget kok</b> asal tahu trik amannya:<br><br>` +
+            `• <b>Trik Makan Tanpa Rasa Bersalah:</b> ${item.tips}<br>` +
+            `• <b>Biar Kalori Tetap Seimbang:</b> Kalau siang udah makan ini, nanti malam pilih menu yang lebih ringan kayak sayur bening dan protein rebus ya. Semangat, nikmati prosesnya!`;
         }
       }
 
       // 4. CEK PERTANYAAN TENTANG MINUMAN (KOPI, BOBA, TEH MANIS, SUSU, JUS, AIR PUTIH)
       if (q.includes("kopi") || q.includes("boba") || q.includes("teh") || q.includes("minum") || q.includes("susu") || q.includes("jus") || q.includes("air") || q.includes("matcha") || q.includes("soda")) {
-        return `Mengenai minuman yang kamu tanyakan untuk mendukung target <b>${tk} kkal/hari</b>:<br><br>` +
-          `• <b>Aturan Minuman Manis/Kopi/Teh:</b> Kopi hitam atau teh tawar hampir <b>0 kkal</b> dan aman untuk diet. Namun jika memakai susu kental manis, gula aren, atau boba, kalorinya bisa mencapai <b>200–350 kkal/gelas</b>. Mintalah opsi <b>less sugar / tanpa gula</b> atau gunakan susu rendah lemak.<br>` +
-          `• <b>Kebutuhan Air Putih Tubuhmu:</b> Dengan berat badan <b>${state.dataDiri.berat_badan} kg</b>, kamu disarankan minum air putih minimal <b>${airLiter} liter (sekitar 8–9 gelas) per hari</b> untuk membantu metabolisme lemak.`;
+        return `Pertanyaan bagus banget nih, <b>${firstName}</b>! Sering kali kalori tersembunyi itu datangnya dari minuman:<br><br>` +
+          `• <b>Tips Ngopi / Minum Segar Saat Diet:</b> Kalau kopi hitam atau teh tawar itu hampir <b>0 kalori</b> jadi aman banget! Tapi kalau kopi susu kekinian, es teh manis, atau boba, minta <b>less sugar (sedikit gula)</b> atau ganti susu rendah lemak ya.<br>` +
+          `• <b>Target Air Putihmu:</b> Untuk berat badanmu sekarang (<b>${state.dataDiri.berat_badan} kg</b>), yuk rutin minum air putih sekitar <b>${airLiter} liter (8–9 gelas) sehari</b> biar badan segar dan pembakaran lemakmu makin ngebut!`;
       }
 
       // 5. CEK PERTANYAAN TENTANG OLAHRAGA / AKTIVITAS FISIK / PERUT BUNCIT
       if (q.includes("olahraga") || q.includes("gym") || q.includes("lari") || q.includes("jalan") || q.includes("senam") || q.includes("workout") || q.includes("perut") || q.includes("buncit") || q.includes("lemak") || q.includes("kardio") || q.includes("gerak")) {
-        return `Untuk kondisi tubuhmu saat ini (BMI <b>${state.hasil.bmi} — ${state.hasil.kategori_bmi}</b>, TDEE <b>${state.hasil.tdee} kkal</b>), berikut kombinasi olahraga yang paling efektif:<br><br>` +
-          `1. <b>Kardio Ringan–Sedang (3–4x seminggu):</b> Jalan cepat 30 menit, jogging santai, bersepeda, atau senam aerobik membakar sekitar <b>180–250 kkal/sesi</b>.<br>` +
-          `2. <b>Latihan Pengencangan Otot (2x seminggu):</b> Squat, plank 30 detik, dan wall push-up di rumah selama 15 menit agar tubuh kencang dan metabolisme basal (BMR) meningkat.<br>` +
-          `3. <b>Kunci Utama:</b> 70% keberhasilan perubahan berat badan berasal dari konsistensi menjaga target kalorimu di <b>${tk} kkal/hari</b>.`;
+        return `Wah, mantap banget semangat olahragamu, <b>${firstName}</b>! Buat kondisi tubuhmu sekarang (BMI <b>${state.hasil.bmi} — ${state.hasil.kategori_bmi}</b>), gak perlu olahraga yang berat-berat kok:<br><br>` +
+          `• <b>Mulai yang Santai Tapi Rutin:</b> Cukup <b>jalan cepat 25–30 menit</b>, jogging sore, atau senam aerobik di kamar 3–4x seminggu udah bisa bakar <b>~200 kkal</b>!<br>` +
+          `• <b>Biar Badan Makin Kencang:</b> Tambahin plank 30 detik dan squat ringan 10–15 menit di rumah.<br><br>` +
+          `Ingat ya, 70% keberhasilan diet itu dari pola makanmu di <b>${tk} kkal/hari</b>, dan olahraga bikin hasilnya makin maksimal. Kamu pasti bisa!`;
       }
 
       // 6. CEK PERTANYAAN TENTANG LAPAR MALAM / CAMILAN / JAM MAKAN / PUASA / MAAG
       if (q.includes("malam") || q.includes("lapar") || q.includes("camilan") || q.includes("ngemil") || q.includes("snack") || q.includes("jam makan") || q.includes("jadwal") || q.includes("puasa") || q.includes("maag") || q.includes("lambung") || q.includes("sarapan") || q.includes("telat")) {
-        return `Menjawab pertanyaanmu seputar pengaturan waktu makan & rasa lapar:<br><br>` +
-          `• <b>Jadwal Makan Ideal:</b> Sarapan pukul 07.00–08.30 (~${Math.round(tk * 0.25)} kkal), Makan Siang pukul 12.00–13.30 (~${Math.round(tk * 0.35)} kkal), Selingan Sore pukul 16.00 (~${Math.round(tk * 0.12)} kkal), dan Makan Malam maksimal pukul 19.30 (~${Math.round(tk * 0.28)} kkal).<br>` +
-          `• <b>Solusi Lapar Malam / Ramah Lambung:</b> Jangan menahan lapar hingga asam lambung naik. Konsumsi camilan sehat <b>100–130 kkal</b> seperti 1 butir telur rebus hangat, potongan buah pepaya/pisang, atau segenggam edamame, disertai 1 gelas air hangat.`;
+        return `Jangan khawatir <b>${firstName}</b>, kalau perut keroncongan jangan disiksa tahan lapar sampai sakit maag ya!<br><br>` +
+          `• <b>Penyelamat Lapar Malam:</b> Ambil camilan ringan sekitar <b>100–130 kkal</b> yang tinggi serat/protein seperti <b>1 butir telur rebus hangat, potongan buah pepaya/apel, atau segenggam edamame</b>, lalu minum 1 gelas air hangat.<br>` +
+          `• <b>Tips Besok Hari:</b> Usahakan jam makanmu teratur (Sarapan 07.30, Siang 12.30, Selingan 16.00, Malam sebelum 19.30) biar gula darah stabil dan gak gampang lapar malam. Semangat terus ya!`;
       }
 
       // 7. CEK PERTANYAAN TENTANG TARGET BERAT BADAN / BERAPA LAMA / SUSAH TURUN / TIPS KONSISTEN
       if (q.includes("berapa lama") || q.includes("susah") || q.includes("stagnan") || q.includes("turun") || q.includes("naik") || q.includes("berat") || q.includes("target") || q.includes("tips") || q.includes("konsisten") || q.includes("bmi") || q.includes("bmr")) {
-        return `Berdasarkan profil tubuhmu (Berat <b>${state.dataDiri.berat_badan} kg</b>, Tinggi <b>${state.dataDiri.tinggi_badan} cm</b>, BMI <b>${state.hasil.bmi}</b>) dan program <b>${state.dataDiri.target_diet}</b>:<br><br>` +
-          `• <b>Estimasi Progres yang Sehat:</b> Dengan menjaga asupan di angka <b>${tk} kkal/hari</b> (dari kebutuhan TDEE ${state.hasil.tdee} kkal), tubuhmu akan mengalami perubahan berat badan yang stabil sekitar <b>0,5 – 0,75 kg per minggu (2 – 3 kg per bulan)</b> tanpa kehilangan massa otot.<br>` +
-          `• <b>Tips Agar Tidak Stagnan:</b> Pastikan tidur cukup 7–8 jam per malam, cukupi protein di setiap waktu makan, dan minum air putih minimal <b>${airLiter} liter/hari</b>.`;
+        return `Aku paham banget rasanya, <b>${firstName}</b>! Tapi percayalah, pelan-pelan asal konsisten itu jauh lebih awet hasilnya:<br><br>` +
+          `• <b>Progres Sehat Tubuhmu:</b> Dengan berat <b>${state.dataDiri.berat_badan} kg</b> dan rutin menjaga porsi di <b>${tk} kkal/hari</b>, progres yang paling sehat dan aman adalah sekitar <b>0,5 – 0,75 kg per minggu (2 – 3 kg sebulan)</b>.<br>` +
+          `• <b>Kunci Biar Gak Gampang Menyerah:</b> Cukup tidur 7–8 jam, jangan skip makan protein, dan nikmati prosesnya hari demi hari. Aku yakin kamu pasti berhasil capai targetmu!`;
       }
 
-      // 8. COBA PANGGIL LIVE AI (UNTUK PERTANYAAN BEBAS APAPUN) DENGAN TIMEOUT CEPAT 4 DETIK
+      // 8. COBA PANGGIL LIVE AI (UNTUK PERTANYAAN BEBAS APAPUN) DENGAN BAHASA SANTAI & MENYEMANGATI
       try {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 4500);
-        const promptSystem = `Kamu adalah Dr. Buddy AI, ahli gizi ramah di aplikasi web DietBuddy. Pengguna bernama ${state.user.nama} (Berat ${state.dataDiri.berat_badan} kg, Tinggi ${state.dataDiri.tinggi_badan} cm, Umur ${state.dataDiri.umur} thn, BMI ${state.hasil.bmi} ${state.hasil.kategori_bmi}, Program: ${state.dataDiri.target_diet}, Target Kalori: ${tk} kkal/hari). Jawab pertanyaan berikut secara langsung, nyambung, jelas, dan singkat (maksimal 3-4 kalimat atau poin singkat) dalam Bahasa Indonesia: "${question}"`;
+        const promptSystem = `Kamu adalah Dr. Buddy AI, teman diet yang sangat ramah, santai, hangat, dan selalu menyemangati di aplikasi DietBuddy. Pengguna bernama ${firstName} (Berat ${state.dataDiri.berat_badan} kg, Tinggi ${state.dataDiri.tinggi_badan} cm, BMI ${state.hasil.bmi} ${state.hasil.kategori_bmi}, Program: ${state.dataDiri.target_diet}, Target Kalori: ${tk} kkal/hari). Jawab pertanyaan berikut dengan bahasa Indonesia yang santai, nyambung, tidak kaku, dan beri kalimat penyemangat di akhir (maksimal 3-4 kalimat): "${question}"`;
         const res = await fetch("https://text.pollinations.ai/" + encodeURIComponent(promptSystem), { signal: controller.signal });
         clearTimeout(timer);
         if (res.ok) {
@@ -501,14 +506,13 @@
           }
         }
       } catch (err) {
-        // Jika offline / Wi-Fi kampus lambat, lanjut ke respons pintar lokal di bawah
+        // Lanjut ke respons lokal santai jika offline
       }
 
-      // 9. RESPONS KONTEKSTUAL CERDAS JIKA OFFLINE (MENJAWAB LANGSUNG TOPIK PERTANYAAN PENGGUNA)
-      return `Menanggapi pertanyaanmu mengenai <b>"${question}"</b>:<br><br>` +
-        `Dalam program <b>${state.dataDiri.target_diet}</b> dengan sasaran <b>${tk} kkal/hari</b>, prinsip utamanya adalah menjaga keseimbangan porsi gizi harianmu:<br>` +
-        `• <b>Aturan Porsi:</b> Pastikan setiap kali makan utama (~${mealCal} kkal) tetap mengandung sumber protein (ayam/ikan/telur/tempe), serat sayuran, dan karbohidrat terukur.<br>` +
-        `• <b>Keseimbangan Kalori:</b> Selama total asupan harianmu tidak melewati <b>${tk} kkal/hari</b> dan kebutuhan air putih (<b>${airLiter} liter/hari</b>) terpenuhi, progres dietmu akan tetap berjalan optimal.`;
+      // 9. RESPONS KONTEKSTUAL SANTAI & MENYEMANGATI JIKA OFFLINE
+      return `Wah, pertanyaan seru nih <b>${firstName}</b> soal <b>"${question}"</b>!<br><br>` +
+        `Intinya selama kamu jalani program <b>${state.dataDiri.target_diet}</b> ini, kamu gak perlu pantang makanan secara ekstrem kok. Cukup jaga porsi sekali makan utamamu di kisaran <b>~${mealCal} kkal</b> (ada lauk protein, sayur, dan karbohidrat secukupnya) supaya total harianmu tetap aman di <b>${tk} kkal/hari</b>.<br><br>` +
+        `Jangan lupa minum air putih <b>${airLiter} liter/hari</b> ya. Semangat terus jalani diet sehatnya, kamu pasti bisa!`;
     }
 
     // FUNGSI SEDERHANA CHECK-IN HARI DIET (MUDAH DIJELASKAN SAAT PRESENTASI)
