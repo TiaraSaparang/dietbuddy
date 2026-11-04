@@ -961,12 +961,12 @@
         btnCheck.className = "btn btn-primary";
       }
 
-      document.getElementById("dispTargetKalori").innerHTML = `${tk.toLocaleString('id-ID')} <span style="font-size:15px; font-weight:600; color:var(--text-body);">kkal / hari</span>`;
+      document.getElementById("dispTargetKalori").innerHTML = `${tk.toLocaleString('id-ID')} <span style="font-size:15px; font-weight:600; color:#BAE6FD;">kkal / hari</span>`;
       document.getElementById("dispKaloriSplit").innerHTML = `
-        <span>Sarapan: ${Math.round(tk * 0.25)} kkal</span>
-        <span>Siang: ${Math.round(tk * 0.35)} kkal</span>
-        <span>Selingan: ${Math.round(tk * 0.12)} kkal</span>
-        <span>Malam: ${Math.round(tk * 0.28)} kkal</span>
+        <span style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25); border-radius:8px; padding:4px 8px;">Sarapan: ${Math.round(tk * 0.25)} kkal</span>
+        <span style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25); border-radius:8px; padding:4px 8px;">Siang: ${Math.round(tk * 0.35)} kkal</span>
+        <span style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25); border-radius:8px; padding:4px 8px;">Selingan: ${Math.round(tk * 0.12)} kkal</span>
+        <span style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25); border-radius:8px; padding:4px 8px;">Malam: ${Math.round(tk * 0.28)} kkal</span>
       `;
       document.getElementById("dispKategoriBmi").textContent = state.hasil.kategori_bmi;
       document.getElementById("dispProgramTarget").textContent = state.dataDiri.target_diet;
