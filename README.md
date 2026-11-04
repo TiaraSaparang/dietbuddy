@@ -1,51 +1,52 @@
-# DietBuddy — Aplikasi Web Pendamping Diet & Kalkulasi Gizi Berbasis AI
+# DietBuddy — AI Nutrition & Diet Companion Web App
+**Proyek Rekayasa Perangkat Lunak (IPPL) — Capaian Progres 50%+ (55%)**
 
-**Mata Kuliah:** Implementasi Perangkat Lunak (IPPL)  
-**Nama Mahasiswa:** Tiara Saparang  
-**NIM:** 11241085  
-**Tahap Evaluasi:** Presentasi Progres 50% Project IPPL (Realisasi Saat Ini: ~52,6%)
-
----
-
-## 1. Deskripsi Singkat Aplikasi
-**DietBuddy** adalah aplikasi berbasis web yang membantu pengguna mengatur kebutuhan kalori harian untuk **menurunkan berat badan**, **menjaga berat badan tetap stabil**, maupun **menaikkan berat badan** secara aman dan konsisten sesuai rumus medis **Mifflin-St Jeor** serta didampingi fitur konsultasi gizi berbasis **AI**.
+- **Pengembang:** Tiara Saparang (11241085)
+- **Demo Live:** [https://tiarasaparang.github.io/dietbuddy/](https://tiarasaparang.github.io/dietbuddy/)
+- **Repository:** [https://github.com/TiaraSaparang/dietbuddy](https://github.com/TiaraSaparang/dietbuddy)
 
 ---
 
-## 2. Kesesuaian Rencana & Realisasi Implementasi (Progres >50%)
+## 🌟 Tentang DietBuddy
+**DietBuddy** adalah aplikasi asisten nutrisi berbasis AI yang dirancang untuk membantu mahasiswa dan masyarakat luas menjalankan pola makan sehat tanpa stres, tanpa kelaparan ekstrem, dan sesuai dengan bahan makanan yang tersedia di rumah/kulkas.
 
-Berikut adalah rincian kesesuaian antara dokumen perancangan dengan fitur yang **telah selesai diimplementasikan (>50%)** serta fitur tahap selanjutnya menuju UAS:
-
-| No | Modul / Fitur Sistem | Status Implementasi | Keterangan Realisasi |
-| :--- | :--- | :--- | :--- |
-| **1** | **Registrasi Akun Pengguna Baru** (`UC-01`) | **Selesai (100%)** | Validasi nama, format email, password min. 8 karakter & ikon mata |
-| **2** | **Login & Logout Pengguna** (`UC-02`, `UC-03`) | **Selesai (100%)** | Cek akun belum terdaftar, validasi password & simpan di `localStorage` |
-| **3** | **Ubah Data Diri & Target Diet** (`UC-05`, `UC-06`) | **Selesai (100%)** | Input Berat, Tinggi, Umur, Gender, Aktivitas & Program Bulanan |
-| **4** | **Kalkulasi Otomatis BMI, BMR, TDEE & Kalori** (`UC-07`, `UC-08`) | **Selesai (100%)** | Rumus Mifflin-St Jeor & batas aman kalori minimal (1.200/1.500 kkal) |
-| **5** | **Rekomendasi Menu Makanan Harian** (`UC-09`) | **Selesai (100%)** | Susunan menu Sarapan, Siang, Selingan, Malam + Kuota Gratis 1x/hari |
-| **6** | **Check-In Konsistensi Harian** (`UC-12`) | **Selesai (100%)** | Pencatatan jumlah hari konsisten menjalankan target diet harian |
-| **7** | **Konsultasi Diet & Bahan Makanan via AI** (`UC-11`) | **Selesai (100%)** | Tanya jawab porsi & pengganti bahan makanan + Kuota Gratis 3x chat |
-| **8** | **Pengaturan Akun & Aplikasi** | **Selesai (100%)** | Ubah nama pengguna, ubah password baru, dan reset status harian |
-| *9* | *Riwayat Aktivitas & Catatan Kalori* | *Segera (Tahap UAS)* | *Grafik perkembangan berat badan & log riwayat kalori harian* |
-| *10* | *Berlangganan Premium & Simulasi Pembayaran* | *Segera (Tahap UAS)* | *Paket Premium 1 Bulan (Rp 25rb), 3 Bulan (Rp 65rb), 6 Bulan (Rp 100rb)* |
+### Fitur Unggulan (50% Milestone):
+1. **Autentikasi Aman & Validasi Real-Time:** Pendaftaran akun baru, validasi format email & minimal 8 karakter password, serta ikon intip kata sandi.
+2. **Kalkulator Kalori Medis Akurat:** Perhitungan BMI, BMR (Mifflin-St Jeor), TDEE, dan batas aman kalori harian.
+3. **Rekomendasi Menu 4 Waktu:** Sarapan, Makan Siang, Selingan Sore, dan Makan Malam beserta kuota ganti menu harian.
+4. **Asisten Nutrisi AI Konsultatif:** Dilengkapi jeda berpikir alami (1.8 detik), panduan resep praktis (tanpa minyak berlebih), dan rekomendasi 3 alternatif pengganti bahan makanan.
+5. **Check-In Konsistensi Harian:** Pencatatan hari konsistensi diet pengguna.
 
 ---
 
-## 3. Struktur File Proyek
-- `index.html` — Antarmuka utama aplikasi Web DietBuddy (HTML5, CSS3 Soft Sky Blue & Clean White, JavaScript).
-- `app.py` — *Entry point* aplikasi berbasis Python & Streamlit.
-- `models.py` — Implementasi *Class Diagram* (`Pengguna`, `DataDiri`, `HasilPerhitungan`, `MenuMakanan`).
-- `database.py` — Modul basis data SQLite (`pengguna`, `data_diri`, `hasil_perhitungan`, `rekomendasi_menu`, `pesan_konsultasi`).
-- `gemini_service.py` — Modul layanan respons konsultasi gizi dan pengganti bahan makanan.
-- `requirements.txt` — Daftar pustaka Python yang digunakan.
+## 📁 Struktur Direktori Berbasis Arsitektur Tiga Lapis (Three-Tier)
+
+```text
+dietbuddy/
+├── ai-service/             # Modul Kecerdasan Buatan & Prompting
+│   ├── gemini_service.py   # Integrasi AI Nutritionist
+│   └── prompts.json        # Template prompt persona & instruksi gizi
+├── backend/                # Layanan REST API & Backend
+│   ├── app.py              # Server backend Flask
+│   ├── database.py         # Konfigurasi ORM SQLite
+│   ├── models.py           # Model entitas tabel
+│   └── requirements.txt    # Dependensi library Python
+├── database/               # Skema Basis Data Relasional
+│   ├── dietbuddy.sql       # Skema DDL 5 tabel utama
+│   └── schema_dictionary.md# Kamus data & relasi ERD
+├── docs/                   # Dokumentasi Proyek & Spesifikasi Sistem
+│   ├── arsitektur_sistem.md# Diagram aliran sistem & analisis 50%
+│   └── README.md           # Salinan arsip panduan
+├── index.html              # Antarmuka Pengguna (Frontend Web)
+├── style.css               # Desain Responsif & Tema DietBuddy
+├── script.js               # Logika Kalkulator Medis & Engine AI
+└── README.md               # Dokumentasi utama proyek
+```
 
 ---
 
-## 4. Cara Menjalankan Aplikasi
-1. **Melalui Browser Langsung:**  
-   Buka file `index.html` di Google Chrome / Microsoft Edge, atau akses melalui GitHub Pages: `https://tiarasaparang.github.io/dietbuddy/`
-2. **Melalui Python Streamlit:**  
-   ```bash
-   pip install -r requirements.txt
-   streamlit run app.py
-   ```
+## 🚀 Cara Menjalankan Aplikasi
+1. **Langsung Lewat Browser:**  
+   Buka file `index.html` dengan cara klik dua kali atau drag ke browser (Google Chrome / Edge).
+2. **Live Melalui GitHub Pages:**  
+   Akses langsung secara daring di: [https://tiarasaparang.github.io/dietbuddy/](https://tiarasaparang.github.io/dietbuddy/)
