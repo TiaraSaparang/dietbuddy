@@ -9,6 +9,8 @@
       sisaChatGratis: 3,
       sisaMenuGratis: 1,
       indeksPaketMenu: 0,
+      lastTopicFood: "ikan",
+      fallbackCounter: 0,
       registeredUsers: JSON.parse(localStorage.getItem("dietbuddy_users_v2") || "[]"),
       user: {
         nama: "Tiara Saparang",
@@ -35,84 +37,116 @@
 
     const foodSubstituteDB = {
       "ikan": {
-        nama: "Ikan Segar",
+        nama: "Ikan Segar (Kembung / Nila / Tuna / Patin)",
         porsiAman: "120 gram daging ikan (1 ekor sedang, ~150 kkal, 24g protein)",
-        caraMasak: "dikukus pepes, sup bening, atau panggang teflon tanpa digoreng kering"
+        caraMasak: "dikukus pepes bumbu kuning, dibuat sup ikan kuah bening, atau dipanggang teflon tanpa minyak",
+        caraOlahDetail: "1) Lumuri 1 ekor ikan (120g) dengan perasan jeruk nipis, bawang putih, kunyit, jahe, serai, daun kemangi, dan irisan tomat.<br>2) Bungkus pakai daun pisang (atau taruh di wadah tahan panas/aluminium foil kalau gak ada daun pisang), lalu <b>kukus 15–20 menit</b> sampai matang dan wangi!",
+        alternatif: "1) <b>Ikan Panggang Teflon:</b> Panggang di teflon anti lengket pakai bumbu kunyit-bawang (0 minyak).<br>2) <b>Sup Ikan Kuah Asam Bening:</b> Rebus ikan dengan tomat, daun bawang, dan jahe.<br>3) <b>Ganti Bahan Protein Lain:</b> Bisa diganti <b>100g Dada Ayam</b> (~165 kkal) atau <b>2 butir Telur + 1 potong Tempe</b> (~210 kkal)."
       },
       "ayam": {
         nama: "Dada Ayam Tanpa Kulit",
         porsiAman: "100–120 gram dada ayam tanpa kulit (~165 kkal, 31g protein)",
-        caraMasak: "dipanggang teflon bumbu kuning, direbus soto bening, atau ditumis sedikit minyak"
+        caraMasak: "dipanggang teflon bumbu kuning, direbus suwir soto bening, atau ditumis dengan 1 sdt minyak",
+        caraOlahDetail: "1) Potong dadu atau iris tipis 100–120g dada ayam tanpa kulit, marinasi dengan bawang putih halus, lada, sedikit garam, dan perasan jeruk nipis.<br>2) <b>Panggang di teflon anti lengket</b> selama 5–7 menit per sisi dengan api sedang sampai matang kecokelatan (cukup oles 1/2 sendok teh minyak).",
+        alternatif: "1) <b>Ayam Kukus Jahe/Bawang Putih:</b> Empuk banget dan bebas minyak.<br>2) <b>Soto Ayam Kuah Bening (Tanpa Santan):</b> Ayam rebus suwir ditambah soun sedikit dan tauge.<br>3) <b>Ganti Bahan Lain:</b> Bisa diganti <b>1 ekor Ikan Kukus/Bakar</b> (~150 kkal) atau <b>2 butir Telur Rebus + Tahu</b> (~185 kkal)."
       },
       "telur": {
         nama: "Telur Ayam",
         porsiAman: "2 butir telur rebus atau orak-arik teflon (~145 kkal, 13g protein)",
-        caraMasak: "direbus atau didadar tipis minyak dengan irisan tomat/sayur"
+        caraMasak: "direbus matang, dibuat telur kukus, atau didadar tipis minyak dengan irisan tomat dan daun bawang",
+        caraOlahDetail: "1) Kocok 2 butir telur dengan irisan daun bawang, tomat, cabai, dan sedikit garam.<br>2) Masak di <b>teflon anti lengket tanpa minyak</b> (atau semprot sedikit minyak) dengan api kecil sampai matang merata, atau rebus langsung 8 menit.",
+        alternatif: "1) <b>Telur Orak-Arik Sayur:</b> Tumis telur bareng wortel & sawi pakai 1 sdt air/kaldu.<br>2) <b>Sup Telur Tomat Bening:</b> Rebus air mendidih dengan tomat, lalu tuang kocokan telur.<br>3) <b>Ganti Bahan Lain:</b> Bisa diganti <b>100g Dada Ayam</b> (~165 kkal) atau <b>2 potong Tempe + 2 potong Tahu</b> (~190 kkal)."
       },
       "tempe": {
         nama: "Tempe",
         porsiAman: "2 potong sedang (80–100 gram, ~150 kkal, 15g protein nabati)",
-        caraMasak: "dipanggang teflon bumbu bawang/bacem atau dikukus tanpa digoreng tepung"
+        caraMasak: "dipanggang teflon bumbu bawang/ketumbar, dibuat pepes tempe kemangi, atau dikukus",
+        caraOlahDetail: "1) Potong 2 iris sedang tempe (80–100g), rendam sebentar di air bumbu bawang putih, ketumbar, dan sedikit kecap/garam.<br>2) <b>Panggang di atas teflon</b> tanpa minyak (atau oles 1/2 sdt minyak) sambil dibolak-balik sampai kecokelatan dan harum.",
+        alternatif: "1) <b>Pepes Tempe Kemangi:</b> Haluskan tempe dengan bumbu cabai-bawang & kemangi, lalu kukus 15 menit.<br>2) <b>Tempe Ungkep Air Kelapa/Bumbu Kuning:</b> Rebus bumbu sampai meresap tanpa digoreng.<br>3) <b>Ganti Bahan Lain:</b> Bisa diganti <b>2–3 potong Tahu Putih</b> (~120 kkal) atau <b>2 butir Telur Rebus</b> (~145 kkal)."
       },
       "tahu": {
-        nama: "Tahu Putih",
+        nama: "Tahu Putih / Tahu Sutra",
         porsiAman: "2–3 potong sedang (~120 kkal, 12g protein)",
-        caraMasak: "dibuat pepes tahu, sup tahu bening, atau tumis bawang putih"
+        caraMasak: "dibuat pepes tahu kemangi, sup tahu kuah bening, atau panggang teflon bumbu bawang",
+        caraOlahDetail: "1) Hancurkan 2–3 potong tahu putih, campur dengan irisan daun bawang, kemangi, tomat, bawang putih, dan sedikit putih telur.<br>2) Kukus di wadah tahan panas atau daun pisang selama <b>15 menit</b> sampai padat dan gurih!",
+        alternatif: "1) <b>Sup Tahu Sawi Putih:</b> Kuah kaldu bawang putih hangat, cocok buat makan malam.<br>2) <b>Tahu Panggang Teflon Sambal Kecap:</b> Panggang tahu tanpa minyak, cocol irisan cabai rawit.<br>3) <b>Ganti Bahan Lain:</b> Bisa diganti <b>2 potong Tempe</b> (~150 kkal) atau <b>2 butir Telur</b> (~145 kkal)."
       },
       "daging": {
         nama: "Daging Sapi Tanpa Lemak",
-        porsiAman: "85–100 gram daging tanpa lemak (~180 kkal, 26g protein)",
-        caraMasak: "direbus sup sayur bening atau tumis lada hitam sedikit minyak"
+        porsiAman: "85–100 gram daging sapi tanpa gajih/lemak (~180 kkal, 26g protein)",
+        caraMasak: "direbus sup sayur bening (wortel & kentang) atau ditumis lada hitam dengan 1 sdt minyak",
+        caraOlahDetail: "1) Pilih bagian daging has dalam (tenderloin) tanpa lemak putih, iris tipis melawan serat.<br>2) Rebus jadi <b>sup daging bening</b> dengan wortel & buncis, atau tumis cepat di teflon pakai bawang bombay dan lada hitam.",
+        alternatif: "1) <b>Soto Daging Kuah Bening:</b> Segar, berempah, dan rendah lemak.<br>2) <b>Daging Panggang Sambal Matah:</b> Irisan daging panggang teflon dengan bawang merah & serai segar.<br>3) <b>Ganti Bahan Lain:</b> Bisa diganti <b>100g Dada Ayam</b> (~165 kkal) atau <b>120g Ikan Segar</b> (~150 kkal)."
       },
       "nasi putih": {
         nama: "Nasi Putih",
         porsiAman: "100 gram (6–7 sendok makan peres, ~130 kkal)",
-        caraMasak: "didampingi semangkuk sayur terlebih dahulu agar kenyang lebih lama"
+        caraMasak: "didampingi 1 mangkuk sayur dan lauk protein agar gula darah stabil dan kenyang lebih lama",
+        caraOlahDetail: "1) Takar sekitar <b>6–7 sendok makan peres</b> (100 gram) di piringmu.<br>2) Trik biar gak gampang lapar: makan <b>sayur dan lauk proteinnya dulu</b> di suapan pertama, baru makan nasinya!",
+        alternatif: "1) <b>Nasi Merah (100–120g):</b> Seratnya 3x lebih tinggi, bikin kenyang awet (~120 kkal).<br>2) <b>Kentang Kukus/Rebus (150g):</b> Kalori setara tapi bikin perut kenyang lebih lama (~130 kkal).<br>3) <b>Ubi Rebus (150g) atau Oatmeal (4–5 sdm):</b> Cocok banget buat variasi karbohidrat sehat."
       },
       "nasi merah": {
         nama: "Nasi Merah",
         porsiAman: "100–120 gram (1 centong sedang, ~120 kkal tinggi serat)",
-        caraMasak: "disajikan hangat dengan lauk protein dan sayuran"
+        caraMasak: "dimasak dengan sedikit tambahan air agar pulen dan disajikan hangat dengan lauk protein",
+        caraOlahDetail: "1) Cuci beras merah dan rendam 15 menit sebelum dimasak di rice cooker dengan rasio air sedikit lebih banyak dari beras putih.<br>2) Sajikan 1 centong sedang (100–120g) bersama lauk tinggi protein dan sayuran hijau.",
+        alternatif: "1) <b>Nasi Putih Porsi Terukur (6–7 sdm):</b> Tetap aman kok kalau belum terbiasa nasi merah!<br>2) <b>Kentang Rebus (150g):</b> Lembut dan mengenyangkan (~130 kkal).<br>3) <b>Oatmeal Gurih (4–5 sdm):</b> Diseduh air kaldu hangat dengan topping telur dan sayur."
       },
       "kentang": {
         nama: "Kentang",
         porsiAman: "150 gram (1–2 buah sedang kukus/rebus, ~130 kkal)",
-        caraMasak: "dikukus atau direbus sebagai pengganti nasi"
+        caraMasak: "dikukus atau direbus beserta kulit bersihnya, atau dipanggang teflon dengan taburan lada & oregano",
+        caraOlahDetail: "1) Cuci bersih 1–2 buah kentang sedang (150g), potong wedges atau belah dua.<br>2) <b>Kukus 15 menit</b> sampai empuk, lalu beri sedikit garam, lada hitam, dan daun seledri cincang.",
+        alternatif: "1) <b>Mashed Potato Diet:</b> Haluskan kentang kukus dengan sedikit susu rendah lemak & bawang putih.<br>2) <b>Ubi Jalar Kukus (150g):</b> Rasa manis alami dan tinggi serat (~130 kkal).<br>3) <b>Nasi Putih/Merah (100g):</b> 6–7 sendok makan (~120–130 kkal)."
       },
       "roti": {
         nama: "Roti Gandum / Tawar",
-        porsiAman: "2 lembar roti gandum (~140 kkal)",
-        caraMasak: "dipanggang teflon dengan isian telur atau pisang"
+        porsiAman: "2 lembar roti gandum utuh (~140 kkal)",
+        caraMasak: "dipanggang teflon tanpa mentega berlebih, diisi telur dadar tipis, selada, dan irisan tomat",
+        caraOlahDetail: "1) Panggang 2 lembar roti gandum di atas teflon kering sampai agak renyah.<br>2) Isi dengan <b>1 butir telur mata sapi/rebus, lembaran sayur selada, dan tomat</b> (hindari kental manis atau mentega tebal).",
+        alternatif: "1) <b>Roti Gandum + Pisang Iris:</b> Cocok buat sarapan cepat sebelum kuliah/aktivitas.<br>2) <b>Oatmeal Hangat (4–5 sdm):</b> Lebih tinggi serat larut (~150 kkal).<br>3) <b>Kentang/Ubi Kukus (150g):</b> Bebas tepung dan bikin kenyang lama."
       },
       "mie": {
         nama: "Mie / Bihun",
-        porsiAman: "1 porsi bihun atau ¾ keping mie rebus dengan ½ takaran bumbu",
-        caraMasak: "ditambah 1 mangkuk sayur sawi dan 1–2 butir telur rebus"
+        porsiAman: "1 porsi bihun rebus atau ¾ keping mie dengan ½ takaran bumbu (~220–280 kkal)",
+        caraMasak: "direbus dengan tambahan 1 mangkuk penuh sayur sawi/tauge dan 1–2 butir telur rebus",
+        caraOlahDetail: "1) Rebus mie/bihun lalu buang air rebusan pertamanya dan ganti dengan air kaldu baru.<br>2) Gunakan <b>setengah bungkus bumbu aja</b> (biar gak tinggi natrium/garam), lalu masukkan banyak sayur sawi hijau, tomat, dan telur rebus!",
+        alternatif: "1) <b>Bihun Kuah Bening Ayam Suwir:</b> Kalorinya lebih ramah dibanding mie goreng instan.<br>2) <b>Soun / Shirataki Rebus:</b> Rendah kalori dan enak dimasak kuah soto/tom yam.<br>3) <b>Nasi Hangat (6 sdm) + Sup Telur:</b> Lebih mengenyangkan untuk makan utama."
       },
       "sayur": {
-        nama: "Sayuran Hijau (Bayam/Kangkung/Brokoli)",
-        porsiAman: "1 mangkuk penuh (150 gram, ~40 kkal kaya serat)",
-        caraMasak: "direbus sayur bening atau tumis bawang putih dengan 1 sdt minyak"
+        nama: "Sayuran Hijau (Bayam / Kangkung / Brokoli / Sawi / Capcay)",
+        porsiAman: "1 mangkuk penuh (150–200 gram, ~40–60 kkal kaya serat & vitamin)",
+        caraMasak: "direbus sayur bening jagung, dikukus sebentar, atau ditumis bawang putih dengan 1 sdt minyak",
+        caraOlahDetail: "1) Cuci bersih sayuran, potong-potong, lalu masak cepat (2–3 menit) supaya nutrisinya terjaga dan tetap renyah.<br>2) Bisa dibuat <b>sayur bening temu kunci/bawang</b> atau <b>capcay kuah bening</b> pakai bawang putih dan sedikit minyak wijen.",
+        alternatif: "1) <b>Lalapan Segar / Salad Timun Tomat:</b> Praktis tanpa dimasak.<br>2) <b>Pecel / Gado-Gado Sayur Rebus:</b> Pakai 1–2 sdm bumbu kacang yang diseduh air hangat (jangan diguyur banyak-banyak).<br>3) <b>Sup Sayur Wortel Buncis:</b> Hangat dan bikin perut nyaman."
       },
       "udang": {
         nama: "Udang Segar",
-        porsiAman: "100–120 gram udang kupas (~115 kkal, 24g protein tinggi)",
-        caraMasak: "direbus sup tom yam bening, dikukus, atau ditumis bawang putih sedikit minyak"
+        porsiAman: "100–120 gram udang kupas (~115 kkal, 24g protein tinggi & rendah lemak)",
+        caraMasak: "direbus sup tom yam bening, dikukus bawang putih, atau ditumis cepat dengan 1 sdt minyak",
+        caraOlahDetail: "1) Kupas kulit udang dan bersihkan punggungnya, beri perasan jeruk nipis dan bawang putih cincang.<br>2) Tumis cepat 3–4 menit di teflon bersama brokoli/buncis, atau rebus jadi <b>sup udang kuah asam segar</b>.",
+        alternatif: "1) <b>Udang Panggang Teflon Bumbu Jimbaran/Madu Tipis:</b> Wangi dan rendah kalori.<br>2) <b>Pepes Tahu Udang:</b> Campur udang cincang dengan tahu putih lalu kukus.<br>3) <b>Ganti Bahan Lain:</b> Bisa diganti <b>120g Ikan Segar</b> (~150 kkal) atau <b>100g Dada Ayam</b> (~165 kkal)."
       },
       "ubi": {
         nama: "Ubi Jalar / Singkong",
         porsiAman: "150 gram (1 buah sedang kukus/rebus, ~130 kkal tinggi serat)",
-        caraMasak: "dikukus atau direbus hangat tanpa digoreng sebagai pengganti nasi"
+        caraMasak: "dikukus atau direbus hangat tanpa digoreng sebagai pengganti nasi",
+        caraOlahDetail: "1) Cuci bersih 1 buah ubi jalar (ungu/kuning/madu), potong sedang.<br>2) <b>Kukus selama 15–20 menit</b> sampai lembut dan manis alami keluar tanpa perlu tambahan gula.",
+        alternatif: "1) <b>Kentang Kukus (150g):</b> Gurih untuk pendamping lauk ayam/ikan (~130 kkal).<br>2) <b>Oatmeal Pisang (4–5 sdm):</b> Lembut dan kaya serat (~150 kkal).<br>3) <b>Nasi Merah/Putih (100g):</b> 6–7 sendok makan peres (~120–130 kkal)."
       },
       "oat": {
         nama: "Oatmeal",
         porsiAman: "4–5 sendok makan (40 gram, ~150 kkal kaya serat larut)",
-        caraMasak: "diseduh air hangat/susu rendah lemak dengan potongan pisang atau telur rebus"
+        caraMasak: "diseduh air hangat/susu rendah lemak dengan potongan buah, atau dimasak gurih seperti bubur ayam",
+        caraOlahDetail: "1) Seduh 4–5 sdm oatmeal dengan air panas atau susu low-fat selama 3 menit.<br>2) Kalau suka manis: beri potongan pisang/apel & sedikit kayu manis. Kalau suka <b>gurih</b>: masak pakai air kaldu, suwiran ayam/telur rebus, dan daun bawang!",
+        alternatif: "1) <b>Bubur Oat Ayam Suwir:</b> Rasanya mirip bubur ayam tapi jauh lebih tinggi serat!<br>2) <b>Overnight Oats:</b> Rendam oat dengan susu/yogurt rendah lemak di kulkas semalaman.<br>3) <b>Ganti Bahan Lain:</b> <b>2 lembar Roti Gandum</b> (~140 kkal) atau <b>Ubi Kukus 150g</b> (~130 kkal)."
       },
       "buah": {
-        nama: "Buah Segar (Apel/Pepaya/Pisang/Pir)",
+        nama: "Buah Segar (Apel / Pepaya / Pisang / Pir / Jambu / Semangka)",
         porsiAman: "1 porsi sedang (100–150 gram, ~70–90 kkal)",
-        caraMasak: "dikonsumsi langsung dalam kondisi segar tanpa tambahan kental manis atau sirup"
+        caraMasak: "dikonsumsi langsung dalam kondisi segar atau dingin tanpa tambahan kental manis/sirup gula",
+        caraOlahDetail: "1) Potong 100–150g buah segar dan simpan di kulkas biar segar dimakan saat jam camilan sore (pukul 15.30–16.30).<br>2) Kalau mau dibuat jus/smoothie, <b>blender beserta ampasnya tanpa gula pasir/kental manis</b> ya!",
+        alternatif: "1) <b>Rujak Buah Tanpa Gula Berlebih:</b> Segar untuk siang hari.<br>2) <b>Buah Potong + Yogurt Plain:</b> Camilan sehat yang bagus buat pencernaan.<br>3) <b>Pepaya / Apel Potong:</b> Paling ampuh nahan lapar malam hari."
       }
     };
 
@@ -419,100 +453,181 @@
       const mealCal = Math.round(tk * 0.35);
       const airLiter = (state.dataDiri.berat_badan * 0.035).toFixed(1);
 
-      // 1. CEK INTENSI MENGGANTI / MENUKAR BAHAN MAKANAN (MISAL: GANTI IKAN KE AYAM)
-      const isSwapIntent = q.includes("ganti") || q.includes("tukar") || q.includes("ubah") || q.includes("ke ") || q.includes("jadi ") || q.includes("adanya") || q.includes("cuma ada") || q.includes("ga ada") || q.includes("gak ada") || q.includes("tidak ada") || q.includes("alergi");
+      // Simpan topik bahan makanan terakhir agar pertanyaan lanjutan ("hah maksudnya gimana", "cara masaknya gimana", "alternatif lainnya apa") tetap nyambung!
+      if (mentionedFoods.length > 0) {
+        state.lastTopicFood = mentionedFoods[mentionedFoods.length - 1];
+      }
+      const activeFoodKey = mentionedFoods.length > 0 ? mentionedFoods[mentionedFoods.length - 1] : (state.lastTopicFood || "ikan");
+      const activeFood = foodSubstituteDB[activeFoodKey] || foodSubstituteDB["ikan"];
 
+      // Deteksi jenis pertanyaan pengguna
+      const isCookingHowTo = q.includes("cara") || q.includes("kelola") || q.includes("mengelola") || q.includes("olah") || q.includes("mengolah") || q.includes("masak") || q.includes("bikin") || q.includes("buat") || q.includes("resep") || q.includes("bumbu") || q.includes("pepes") || q.includes("kukus") || q.includes("panggang") || q.includes("bakar") || q.includes("rebus") || q.includes("tumis") || q.includes("ungkep");
+      const isAskingAlternative = q.includes("alternatif") || q.includes("saran") || q.includes("selain") || q.includes("pengganti") || q.includes("lainnya") || q.includes("apa lagi") || q.includes("bosan") || q.includes("pilihan") || q.includes("rekomendasi");
+      const isSwapIntent = q.includes("ganti") || q.includes("tukar") || q.includes("ubah") || q.includes("ke ") || q.includes("jadi ") || q.includes("adanya") || q.includes("cuma ada") || q.includes("ga ada") || q.includes("gak ada") || q.includes("tidak ada") || q.includes("alergi");
+      const isFollowUpClarification = q.includes("maksud") || q.includes("mksd") || q.includes("hah") || q.includes("gimana") || q.includes("gmna") || q.includes("gimna") || q.includes("contoh") || q.includes("jelasin") || q.includes("terus");
+
+      // 1. CEK INTENSI MENUKAR 2 BAHAN MAKANAN SPESIFIK (MISAL: GANTI IKAN KE AYAM)
       if (isSwapIntent && mentionedFoods.length >= 2) {
         mentionedFoods.sort((a, b) => q.indexOf(a) - q.indexOf(b));
         const fromKey = mentionedFoods[0];
         const toKey = mentionedFoods[mentionedFoods.length - 1];
         const fromFood = foodSubstituteDB[fromKey];
         const toFood = foodSubstituteDB[toKey];
+        state.lastTopicFood = toKey;
 
-        return `Bisa banget dong, <b>${firstName}</b>! Diet itu gak boleh ribet kok. Kamu cukup tukar lauk <b>${fromFood.nama}</b> pakai <b>${toFood.nama}</b> aja:<br><br>` +
-          `• <b>Porsi Pas Buatmu:</b> Pakai sekitar <b>${toFood.porsiAman}</b> buat sekali makan utama (~${mealCal} kkal).<br>` +
-          `• <b>Tips Masaknya:</b> Biar tetap enak tapi hemat kalori, coba ${toFood.caraMasak} ya.<br><br>` +
-          `Nasi dan sayurannya tetap lanjut kayak biasa. Semangat terus ya, kamu keren banget udah jaga porsi makanmu hari ini!`;
+        return `Bisa banget dong, <b>${firstName}</b>! Diet itu gak boleh ribet kok. Kamu bisa langsung tukar <b>${fromFood.nama}</b> pakai <b>${toFood.nama}</b>:<br><br>` +
+          `• <b>Takaran Porsi Pas Buatmu:</b> Gunakan <b>${toFood.porsiAman}</b> untuk sekali makan utama (~${mealCal} kkal).<br>` +
+          `• <b>Cara Mengolahnya:</b> ${toFood.caraOlahDetail}<br>` +
+          `• <b>Alternatif Lain Kalau Bosan:</b><br>${toFood.alternatif}<br><br>` +
+          `Nasi dan sayurannya tetap lanjut seperti biasa ya. Semangat terus, kamu keren banget udah konsisten!`;
       }
 
-      // 2. CEK PERTANYAAN TENTANG BAHAN MAKANAN SPESIFIK DI KULKAS / PORSI MAKANAN
-      if (mentionedFoods.length >= 1 && (isSwapIntent || q.includes("kulkas") || q.includes("di rumah") || q.includes("porsi") || q.includes("boleh") || q.includes("bagus") || q.includes("kalori") || q.includes("makan"))) {
-        const chosenKey = mentionedFoods[mentionedFoods.length - 1];
-        const foodInfo = foodSubstituteDB[chosenKey];
+      // 2. CEK PERTANYAAN CARA MENGOLAH / MENGELOLA / MEMASAK / RESEP (MISAL: "hah mksdnya, cara mengelola pepes ikan gimna")
+      if (isCookingHowTo && (mentionedFoods.length >= 1 || isFollowUpClarification || q.includes("pepes") || q.includes("sup") || q.includes("menu") || q.includes("lauk"))) {
+        const targetKey = mentionedFoods.length >= 1 ? mentionedFoods[mentionedFoods.length - 1] : (q.includes("pepes") && !mentionedFoods.length ? "ikan" : activeFoodKey);
+        const info = foodSubstituteDB[targetKey] || activeFood;
+        state.lastTopicFood = targetKey;
+
+        return `Oalah, maksudnya gini lho <b>${firstName}</b>! Cara mengolah <b>${info.nama}</b> biar enak, praktis, dan tetap rendah kalori buat program dietmu itu gampang banget:<br><br>` +
+          `• <b>Cara Mengolah Praktis (Tanpa Digoreng Minyak):</b><br>${info.caraOlahDetail}<br><br>` +
+          `• <b>Takaran Porsi Sekali Makan:</b><br>Cukup <b>${info.porsiAman}</b> (pas banget buat jatah makan utamamu ~${mealCal} kkal dari target <b>${tk} kkal/hari</b>).<br><br>` +
+          `• <b>3 Alternatif Lain (Kalau Gak Sempat / Gak Ada Bahannya):</b><br>${info.alternatif}<br><br>` +
+          `Gimana, gampang banget kan dipraktikkan di rumah? Kalau mau tanya bahan lain, langsung ketik aja ya!`;
+      }
+
+      // 3. CEK PERTANYAAN MINTA SARAN / ALTERNATIF PENGGANTI BAHAN
+      if ((isAskingAlternative || isSwapIntent) && (mentionedFoods.length >= 1 || isFollowUpClarification)) {
+        return `Siap <b>${firstName}</b>! Buat ganti atau variasi dari <b>${activeFood.nama}</b> supaya kamu gak bosan dan tetap sesuai target <b>${tk} kkal/hari</b>, ini 3 alternatif terbaik yang bisa kamu pilih:<br><br>` +
+          `${activeFood.alternatif}<br><br>` +
+          `• <b>Saran Cara Masak Biar Praktis:</b><br>${activeFood.caraOlahDetail}<br><br>` +
+          `Kamu paling suka atau paling gampang cari bahan yang nomor berapa nih di rumah?`;
+      }
+
+      // 4. CEK SEMUA PERTANYAAN YANG MENYEBUT BAHAN MAKANAN DI DATABASE (TANPA SYARAT KATA KUNCI SEMPIT)
+      if (mentionedFoods.length >= 1) {
         const listBahanText = mentionedFoods.map(k => `<b>${foodSubstituteDB[k].nama}</b> (${foodSubstituteDB[k].porsiAman})`).join(" + ");
-
-        return `Wah, pilihan bagus itu <b>${firstName}</b>! Bahan yang ada di rumahmu justru sehat dan pas banget buat ngejar target <b>${tk} kkal/hari</b>:<br><br>` +
-          `• <b>Takaran Porsi Amannya:</b> Cukup gunakan ${listBahanText}.<br>` +
-          `• <b>Cara Masak Biar Tetap Nikmat:</b> Enaknya ${foodInfo.caraMasak}.<br><br>` +
-          `Jangan lupa tambahin sayur hijau biar makin kenyang ya. Yuk, lanjut terus progres positifmu!`;
+        return `Pilihan mantap nih, <b>${firstName}</b>! <b>${activeFood.nama}</b> itu bagus banget buat bantu capai target <b>${tk} kkal/hari</b> kamu:<br><br>` +
+          `• <b>Takaran Porsi Amannya:</b> Gunakan ${listBahanText}.<br>` +
+          `• <b>Cara Mengolah Biar Enak & Sehat:</b><br>${activeFood.caraOlahDetail}<br><br>` +
+          `• <b>Pilihan Alternatif Kalau Mau Variasi:</b><br>${activeFood.alternatif}<br><br>` +
+          `Jangan lupa dampingi sama sayur hijau dan air putih <b>${airLiter} liter/hari</b> ya. Semangat terus!`;
       }
 
-      // 3. CEK PERTANYAAN TENTANG JAJANAN / MAKANAN FAVORIT (BAKSO, SEBLAK, GORENGAN, MIE AYAM, NASI PADANG, MARTABAK, ES KRIM, COKLAT)
+      // 5. CEK PERTANYAAN JAJANAN / MAKANAN FAVORIT (BAKSO, SEBLAK, GORENGAN, MIE AYAM, NASI PADANG, MARTABAK, ES KRIM, COKLAT)
       const jajananMap = [
-        { keys: ["gorengan", "bakwan", "risol", "tempe goreng", "ayam goreng"], nama: "Gorengan", kal: "130–180 kkal per potong", tips: "Cukup icip <b>1 potong aja</b> buat obat kangen, tiriskan minyaknya pakai tisu, atau lebih mantap lagi kalau dipanggang di teflon!" },
-        { keys: ["bakso", "pentol", "cilok", "soto"], nama: "Bakso / Makanan Berkuah", kal: "320–400 kkal per mangkuk", tips: "Pilih <b>bakso daging tanpa gajih/lemak</b>, minta bihunnya setengah porsi aja, banyakin sayur sawinya, dan kuahnya jangan dihabisin semua ya biar gak kebanyakan garam." },
-        { keys: ["seblak", "pedas", "mie instan", "indomie", "mie ayam", "ramen"], nama: "Seblak / Mie Favoritmu", kal: "380–480 kkal per porsi", tips: "Boleh kok sesekali (maksimal 1x seminggu), triknya pakai <b>bumbu setengah aja</b>, kurangi kerupuknya, terus tambahin <b>telur rebus + sayur sawi yang banyak</b> biar tetap mengenyangkan!" },
-        { keys: ["padang", "rendang", "sate", "nasi goreng", "pecel", "gado"], nama: "Menu Berbumbu / Nasi Padang", kal: "450–600 kkal per porsi", tips: "Ambil <b>nasinya setengah porsi aja</b>, pilih lauk ayam bakar/ikan bakar tanpa kuah santan kental, dan perbanyak lalapan timun atau sayur rebusnya." },
-        { keys: ["manis", "coklat", "es krim", "kue", "martabak", "roti bakar", "donat", "biskuit"], nama: "Camilan Manis", kal: "200–350 kkal per porsi", tips: "Makan <b>1–2 potong kecil aja setelah makan siang</b> (jangan pas perut kosong), lalu minum segelas air putih hangat." }
+        {
+          keys: ["gorengan", "bakwan", "risol", "mendoan", "cireng", "kentang goreng"],
+          nama: "Gorengan / Camilan Gurih",
+          kal: "130–180 kkal per potong",
+          tips: "Cukup icip <b>1 potong aja</b> buat obat kangen dan tiriskan minyaknya pakai tisu makan.",
+          alt: "1) <b>Tempe/Tahu Panggang Teflon:</b> Tetap gurih renyah tapi hemat ~100 kkal!<br>2) <b>Edamame Rebus / Jagung Rebus:</b> Gurih alami dan tinggi serat.<br>3) <b>Telur Rebus Tabur Lada Cabai:</b> Kenyangnya awet sampai jam makan berikutnya."
+        },
+        {
+          keys: ["bakso", "pentol", "cilok", "soto", "rawon", "sup", "kuah"],
+          nama: "Bakso / Makanan Berkuah",
+          kal: "320–400 kkal per mangkuk",
+          tips: "Pilih <b>bakso daging urat/halus tanpa gajih</b> (4–5 butir), minta bihun setengah porsi, banyakin sayur sawi/tauge, dan kuahnya jangan dihabiskan semua biar gak kelebihan garam.",
+          alt: "1) <b>Soto Ayam Kuah Bening (Tanpa Santan):</b> Tinggi protein dan segar (~310 kkal).<br>2) <b>Sup Dada Ayam / Ikan Tomat:</b> Lebih rendah lemak dan bikin kenyang.<br>3) <b>Bakso Bikin Sendiri / Kuah Kaldu Telur Sawi:</b> Jauh lebih aman buat progres dietmu!"
+        },
+        {
+          keys: ["seblak", "pedas", "mie instan", "indomie", "mie ayam", "ramen", "kwetiau", "pasta"],
+          nama: "Seblak / Mie Pedas Favorit",
+          kal: "380–480 kkal per porsi",
+          tips: "Boleh kok sesekali (1x seminggu). Triknya: minta <b>kuah jangan berminyak, bumbu setengah aja, kurangi kerupuk aci</b>, lalu ganti isiannya pakai <b>telur, dada ayam, dan sayur sawi yang banyak</b>!",
+          alt: "1) <b>Seblak Diet Kuah Bening:</b> Isian telur rebus, tahu putih, jamur, dan sawi hijau (~250 kkal).<br>2) <b>Bihun / Soun Kuah Pedas Tomat:</b> Lebih ramah kalori dibanding kerupuk basah.<br>3) <b>Sup Tom Yam Ikan/Udang:</b> Tetap pedas segar tapi tinggi protein!"
+        },
+        {
+          keys: ["padang", "rendang", "sate", "nasi goreng", "pecel", "gado", "ayam bakar", "warteg"],
+          nama: "Makan di Luar / Nasi Padang / Warteg",
+          kal: "450–550 kkal per porsi",
+          tips: "Ambil <b>nasi setengah porsi (6–7 sdm)</b>, pilih lauk yang <b>dibakar/dikukus/pepes</b> (hindari guyuran kuah santan kental), dan minta sayur rebus atau lalapan timun yang banyak.",
+          alt: "1) <b>Ayam Bakar / Ikan Bakar + Lalapan:</b> Protein tinggi dan minim minyak (~420 kkal).<br>2) <b>Sate Ayam 8–10 Tusuk (Bumbu Kacang Dipisah 1 sdm):</b> Enak dan mengenyangkan.<br>3) <b>Menu Warteg Sehat:</b> Nasi setengah + Telur Dadar/Ayam Ungkep + Sayur Bening + Tempe."
+        },
+        {
+          keys: ["manis", "coklat", "es krim", "kue", "martabak", "roti bakar", "donat", "biskuit", "permen", "dessert"],
+          nama: "Camilan Manis / Dessert",
+          kal: "200–350 kkal per porsi",
+          tips: "Makan <b>1–2 potong kecil aja setelah makan siang</b> (jangan pas perut kosong supaya gula darah gak melonjak), lalu minum segelas air putih.",
+          alt: "1) <b>Buah Dingin + Yogurt Plain:</b> Manis segar alami (~110 kkal).<br>2) <b>Pisang Kukus / Panggang Teflon Tabur Coklat Bubuk:</b> Enak banget buat pengganti kue!<br>3) <b>Dark Chocolate (2 kotak kecil) + Apel Potong:</b> Bikin mood naik tanpa merusak kalori."
+        }
       ];
       for (const item of jajananMap) {
         if (item.keys.some(k => q.includes(k))) {
-          return `Tenang aja <b>${firstName}</b>, diet bareng DietBuddy itu gak boleh bikin kamu stres! Kalau lagi pengen <b>${item.nama}</b> (~${item.kal}), <b>boleh banget kok</b> asal tahu trik amannya:<br><br>` +
-            `• <b>Trik Makan Tanpa Rasa Bersalah:</b> ${item.tips}<br>` +
-            `• <b>Biar Kalori Tetap Seimbang:</b> Kalau siang udah makan ini, nanti malam pilih menu yang lebih ringan kayak sayur bening dan protein rebus ya. Semangat, nikmati prosesnya!`;
+          return `Tenang aja <b>${firstName}</b>, diet bareng DietBuddy itu gak boleh bikin kamu stres! Kalau lagi pengen <b>${item.nama}</b> (~${item.kal}), <b>boleh kok</b> asal tahu trik dan alternatifnya:<br><br>` +
+            `• <b>Trik Makan Aman:</b> ${item.tips}<br><br>` +
+            `• <b>3 Alternatif Lebih Sehat & Rendah Kalori:</b><br>${item.alt}<br><br>` +
+            `Kalau siang udah icip ini, nanti malam pilih menu yang ringan seperti sayur bening dan protein kukus/rebus ya!`;
         }
       }
 
-      // 4. CEK PERTANYAAN TENTANG MINUMAN (KOPI, BOBA, TEH MANIS, SUSU, JUS, AIR PUTIH)
+      // 6. CEK PERTANYAAN TENTANG MINUMAN (KOPI, BOBA, TEH MANIS, SUSU, JUS, AIR PUTIH)
       if (q.includes("kopi") || q.includes("boba") || q.includes("teh") || q.includes("minum") || q.includes("susu") || q.includes("jus") || q.includes("air") || q.includes("matcha") || q.includes("soda")) {
-        return `Pertanyaan bagus banget nih, <b>${firstName}</b>! Sering kali kalori tersembunyi itu datangnya dari minuman:<br><br>` +
-          `• <b>Tips Ngopi / Minum Segar Saat Diet:</b> Kalau kopi hitam atau teh tawar itu hampir <b>0 kalori</b> jadi aman banget! Tapi kalau kopi susu kekinian, es teh manis, atau boba, minta <b>less sugar (sedikit gula)</b> atau ganti susu rendah lemak ya.<br>` +
-          `• <b>Target Air Putihmu:</b> Untuk berat badanmu sekarang (<b>${state.dataDiri.berat_badan} kg</b>), yuk rutin minum air putih sekitar <b>${airLiter} liter (8–9 gelas) sehari</b> biar badan segar dan pembakaran lemakmu makin ngebut!`;
+        return `Pertanyaan bagus banget nih, <b>${firstName}</b>! Sering kali kalori tambahan justru datang dari minuman manis:<br><br>` +
+          `• <b>Saran Saat Pengen Minuman Segar:</b> Kalau pesan kopi susu, matcha, atau es teh, selalu minta <b>less sugar (gula 25%)</b> atau <b>no sugar</b>.<br><br>` +
+          `• <b>3 Alternatif Minuman Ramah Diet:</b><br>` +
+          `1) <b>Es Americano / Kopi Hitam + Susu Low-Fat:</b> Cuma ~40–60 kkal dan bantu bakar energi.<br>` +
+          `2) <b>Es Teh Tawar + Perasan Jeruk Nipis (Lemon Tea Tanpa Gula):</b> Segar banget di siang hari (~10 kkal).<br>` +
+          `3) <b>Infused Water / Air Putih Dingin (${airLiter} liter/hari):</b> Terbaik buat berat badanmu (${state.dataDiri.berat_badan} kg) agar metabolisme lancar!`;
       }
 
-      // 5. CEK PERTANYAAN TENTANG OLAHRAGA / AKTIVITAS FISIK / PERUT BUNCIT
+      // 7. CEK PERTANYAAN TENTANG OLAHRAGA / AKTIVITAS FISIK / PERUT BUNCIT
       if (q.includes("olahraga") || q.includes("gym") || q.includes("lari") || q.includes("jalan") || q.includes("senam") || q.includes("workout") || q.includes("perut") || q.includes("buncit") || q.includes("lemak") || q.includes("kardio") || q.includes("gerak")) {
-        return `Wah, mantap banget semangat olahragamu, <b>${firstName}</b>! Buat kondisi tubuhmu sekarang (BMI <b>${state.hasil.bmi} — ${state.hasil.kategori_bmi}</b>), gak perlu olahraga yang berat-berat kok:<br><br>` +
-          `• <b>Mulai yang Santai Tapi Rutin:</b> Cukup <b>jalan cepat 25–30 menit</b>, jogging sore, atau senam aerobik di kamar 3–4x seminggu udah bisa bakar <b>~200 kkal</b>!<br>` +
-          `• <b>Biar Badan Makin Kencang:</b> Tambahin plank 30 detik dan squat ringan 10–15 menit di rumah.<br><br>` +
-          `Ingat ya, 70% keberhasilan diet itu dari pola makanmu di <b>${tk} kkal/hari</b>, dan olahraga bikin hasilnya makin maksimal. Kamu pasti bisa!`;
+        return `Semangat olahragamu keren banget, <b>${firstName}</b>! Buat kondisi tubuhmu (BMI <b>${state.hasil.bmi} — ${state.hasil.kategori_bmi}</b>), pilih olahraga yang nyaman biar konsisten:<br><br>` +
+          `• <b>Saran Durasi Efektif:</b> Cukup <b>25–30 menit (3–4x seminggu)</b> sudah membakar ~180–220 kkal.<br><br>` +
+          `• <b>3 Pilihan Alternatif Olahraga Praktis (Bisa di Kos/Rumah):</b><br>` +
+          `1) <b>Jalan Cepat Pagi/Sore (Brisk Walk):</b> Paling aman buat sendi dan efektif bakar lemak perut.<br>` +
+          `2) <b>Senam Aerobik / Dance Workout YouTube (20 Menit):</b> Seru di dalam kamar sambil dengerin musik!<br>` +
+          `3) <b>Latihan Kencangkan Perut (Plank 30 detik + Squat 12x):</b> Lakukan 3 set sebelum mandi sore.<br><br>` +
+          `Padukan sama target makan <b>${tk} kkal/hari</b>, dijamin badan makin bugar dan enteng!`;
       }
 
-      // 6. CEK PERTANYAAN TENTANG LAPAR MALAM / CAMILAN / JAM MAKAN / PUASA / MAAG
-      if (q.includes("malam") || q.includes("lapar") || q.includes("camilan") || q.includes("ngemil") || q.includes("snack") || q.includes("jam makan") || q.includes("jadwal") || q.includes("puasa") || q.includes("maag") || q.includes("lambung") || q.includes("sarapan") || q.includes("telat")) {
-        return `Jangan khawatir <b>${firstName}</b>, kalau perut keroncongan jangan disiksa tahan lapar sampai sakit maag ya!<br><br>` +
-          `• <b>Penyelamat Lapar Malam:</b> Ambil camilan ringan sekitar <b>100–130 kkal</b> yang tinggi serat/protein seperti <b>1 butir telur rebus hangat, potongan buah pepaya/apel, atau segenggam edamame</b>, lalu minum 1 gelas air hangat.<br>` +
-          `• <b>Tips Besok Hari:</b> Usahakan jam makanmu teratur (Sarapan 07.30, Siang 12.30, Selingan 16.00, Malam sebelum 19.30) biar gula darah stabil dan gak gampang lapar malam. Semangat terus ya!`;
+      // 8. CEK PERTANYAAN TENTANG LAPAR MALAM / CAMILAN / JAM MAKAN / SARAPAN / MAKAN SIANG / MAAG
+      if (q.includes("malam") || q.includes("lapar") || q.includes("camilan") || q.includes("ngemil") || q.includes("snack") || q.includes("jam makan") || q.includes("jadwal") || q.includes("puasa") || q.includes("maag") || q.includes("lambung") || q.includes("sarapan") || q.includes("siang") || q.includes("pagi") || q.includes("telat")) {
+        return `Jangan khawatir <b>${firstName}</b>, saat diet kamu <b>gak boleh menahan lapar sampai lemas atau sakit maag</b> ya!<br><br>` +
+          `• <b>Saran Jadwal Makan Ideal (${tk} kkal/hari):</b> Sarapan pukul 07.00–08.30 (~${Math.round(tk * 0.25)} kkal), Makan Siang 12.00–13.30 (~${mealCal} kkal), Camilan Sore 16.00 (~${Math.round(tk * 0.10)} kkal), dan Makan Malam sebelum 19.30 (~${ Math.round(tk * 0.30) } kkal).<br><br>` +
+          `• <b>3 Alternatif Penyelamat Saat Lapar Malam / Ngemil:</b><br>` +
+          `1) <b>1 Butir Telur Rebus Hangat / Sup Tahu Bening:</b> Tinggi protein, bikin perut tenang (~75–110 kkal).<br>` +
+          `2) <b>1 Porsi Buah Pepaya / Apel / Pir Potong:</b> Manis segar dan kaya serat (~80 kkal).<br>` +
+          `3) <b>Segelas Susu Rendah Lemak Hangat / Edamame Rebus:</b> Bantu tidur lebih nyenyak tanpa takut gemuk!`;
       }
 
-      // 7. CEK PERTANYAAN TENTANG TARGET BERAT BADAN / BERAPA LAMA / SUSAH TURUN / TIPS KONSISTEN
+      // 9. CEK PERTANYAAN TENTANG TARGET BERAT BADAN / BERAPA LAMA / SUSAH TURUN / TIPS KONSISTEN
       if (q.includes("berapa lama") || q.includes("susah") || q.includes("stagnan") || q.includes("turun") || q.includes("naik") || q.includes("berat") || q.includes("target") || q.includes("tips") || q.includes("konsisten") || q.includes("bmi") || q.includes("bmr")) {
-        return `Aku paham banget rasanya, <b>${firstName}</b>! Tapi percayalah, pelan-pelan asal konsisten itu jauh lebih awet hasilnya:<br><br>` +
-          `• <b>Progres Sehat Tubuhmu:</b> Dengan berat <b>${state.dataDiri.berat_badan} kg</b> dan rutin menjaga porsi di <b>${tk} kkal/hari</b>, progres yang paling sehat dan aman adalah sekitar <b>0,5 – 0,75 kg per minggu (2 – 3 kg sebulan)</b>.<br>` +
-          `• <b>Kunci Biar Gak Gampang Menyerah:</b> Cukup tidur 7–8 jam, jangan skip makan protein, dan nikmati prosesnya hari demi hari. Aku yakin kamu pasti berhasil capai targetmu!`;
+        return `Aku paham banget rasanya, <b>${firstName}</b>! Yuk kita bedah progres sehat buat tubuhmu sekarang (<b>${state.dataDiri.berat_badan} kg, ${state.dataDiri.tinggi_badan} cm</b>):<br><br>` +
+          `• <b>Estimasi Progres Aman:</b> Dengan menjaga kalori di <b>${tk} kkal/hari</b> (defisit sehat dari TDEE ${state.hasil.tdee} kkal), penurunan paling ideal adalah <b>0,5 – 0,75 kg per minggu (2 – 3 kg sebulan)</b>.<br><br>` +
+          `• <b>3 Tips & Alternatif Kalau Berat Badan Lagi Stagnan:</b><br>` +
+          `1) <b>Cek Cara Masak Lauk:</b> Kurangi gorengan tepung, ganti ke kukus/pepes/panggang teflon.<br>` +
+          `2) <b>Perbanyak Protein & Air Putih (${airLiter} L/hari):</b> Supaya yang turun itu lemaknya, bukan ototmu.<br>` +
+          `3) <b>Tidur Cukup 7–8 Jam:</b> Kurang tidur bikin hormon lapar naik lho. Semangat, pelan-pelan asal konsisten pasti sampai target!`;
       }
 
-      // 8. COBA PANGGIL LIVE AI (UNTUK PERTANYAAN BEBAS APAPUN) DENGAN BAHASA SANTAI & MENYEMANGATI
-      try {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 4500);
-        const promptSystem = `Kamu adalah Dr. Buddy AI, teman diet yang sangat ramah, santai, hangat, dan selalu menyemangati di aplikasi DietBuddy. Pengguna bernama ${firstName} (Berat ${state.dataDiri.berat_badan} kg, Tinggi ${state.dataDiri.tinggi_badan} cm, BMI ${state.hasil.bmi} ${state.hasil.kategori_bmi}, Program: ${state.dataDiri.target_diet}, Target Kalori: ${tk} kkal/hari). Jawab pertanyaan berikut dengan bahasa Indonesia yang santai, nyambung, tidak kaku, dan beri kalimat penyemangat di akhir (maksimal 3-4 kalimat): "${question}"`;
-        const res = await fetch("https://text.pollinations.ai/" + encodeURIComponent(promptSystem), { signal: controller.signal });
-        clearTimeout(timer);
-        if (res.ok) {
-          const aiText = (await res.text()).trim();
-          if (aiText && aiText.length > 15 && !aiText.startsWith("<!DOCTYPE")) {
-            return aiText.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br>");
-          }
-        }
-      } catch (err) {
-        // Lanjut ke respons lokal santai jika offline
+      // 10. CEK PERTANYAAN LANJUTAN ("hah maksudnya gimana", "jelasin lagi", "terus gimana")
+      if (isFollowUpClarification) {
+        return `Oh iya <b>${firstName}</b>, biar lebih jelas aku kasih contoh langsung yang gampang dipraktikkan buat menu harianmu (terutama olahan <b>${activeFood.nama}</b> yang lagi kita bahas):<br><br>` +
+          `• <b>Cara Mengolah Praktis di Rumah:</b><br>${activeFood.caraOlahDetail}<br><br>` +
+          `• <b>3 Pilihan Alternatif Penggantinya:</b><br>${activeFood.alternatif}<br><br>` +
+          `• <b>Patokan Porsi Sekali Makan:</b><br>1 porsi karbohidrat (6–7 sdm nasi) + 1 porsi protein (${activeFood.porsiAman}) + 1 mangkuk sayur (~${mealCal} kkal). Kalau masih ada yang bikin bingung, tanya lagi aja ya!`;
       }
 
-      // 9. RESPONS KONTEKSTUAL SANTAI & MENYEMANGATI JIKA OFFLINE
-      return `Wah, pertanyaan seru nih <b>${firstName}</b> soal <b>"${question}"</b>!<br><br>` +
-        `Intinya selama kamu jalani program <b>${state.dataDiri.target_diet}</b> ini, kamu gak perlu pantang makanan secara ekstrem kok. Cukup jaga porsi sekali makan utamamu di kisaran <b>~${mealCal} kkal</b> (ada lauk protein, sayur, dan karbohidrat secukupnya) supaya total harianmu tetap aman di <b>${tk} kkal/hari</b>.<br><br>` +
-        `Jangan lupa minum air putih <b>${airLiter} liter/hari</b> ya. Semangat terus jalani diet sehatnya, kamu pasti bisa!`;
+      // 11. RESPONS CERDAS & DINAMIS UNTUK PERTANYAAN BEBAS APAPUN (SELALU NYAMBUNG, BERI SARAN & 3 ALTERNATIF, TIDAK MONOTON)
+      state.fallbackCounter = (state.fallbackCounter || 0) + 1;
+      if (state.fallbackCounter % 2 === 1) {
+        return `Pertanyaan menarik nih <b>${firstName}</b> tentang <b>"${question}"</b>! Biar tetap nyambung dan aman sama program <b>${state.dataDiri.target_diet} (${tk} kkal/hari)</b> kamu, ini saran dan alternatif praktis dariku:<br><br>` +
+          `• <b>Saran Praktis Buatmu:</b><br>Setiap kali memilih makanan atau menu harian, pastikan ada sumber <b>protein (seperti ikan, ayam, telur, atau tempe)</b> dan <b>sayuran</b> supaya kamu kenyang lebih lama di porsi <b>~${mealCal} kkal sekali makan</b>.<br><br>` +
+          `• <b>3 Alternatif Menu Enak & Gampang Dibuat Hari Ini:</b><br>` +
+          `1) <b>Menu Kukus/Pepes:</b> Nasi hangat 6 sdm + Pepes Ikan/Tahu Kemangi + Sayur Bening (~430 kkal).<br>` +
+          `2) <b>Menu Panggang Teflon:</b> Nasi 6 sdm + Dada Ayam/Tempe Panggang Bumbu Kuning + Lalapan (~450 kkal).<br>` +
+          `3) <b>Menu Berkuah Segar:</b> Sup Telur Tomat + Kentang Rebus + Sawi Hijau (~390 kkal).<br><br>` +
+          `Kamu lagi pengen masak sendiri di rumah atau beli makan di luar nih hari ini? Cerita aja ya!`;
+      } else {
+        return `Siap <b>${firstName}</b>! Menjawab pertanyaanmu soal <b>"${question}"</b>, kuncinya adalah pilih bahan yang mudah kamu dapat dan diolah dengan minim minyak:<br><br>` +
+          `• <b>Tips Mengatur Porsinya:</b><br>Gunakan rumus <b>Isi Piringku DietBuddy</b>: ½ piring sayur hijau, ¼ piring lauk protein (kukus/panggang/rebus), dan ¼ piring karbohidrat (~${mealCal} kkal sekali makan).<br><br>` +
+          `• <b>3 Alternatif Bahan Lauk Hemat & Mudah Dicari:</b><br>` +
+          `1) <b>Telur Ayam (2 butir ~145 kkal):</b> Bisa direbus, dadar teflon tomat, atau sup telur.<br>` +
+          `2) <b>Tempe & Tahu (2 potong ~140 kkal):</b> Enak dipanggang teflon kecap bawang atau dipepes.<br>` +
+          `3) <b>Ikan / Dada Ayam (100–120g ~155 kkal):</b> Tinggi protein untuk jaga metabolisme tubuhmu.<br><br>` +
+          `Jangan lupa minum air putih <b>${airLiter} liter/hari</b> ya. Kalau mau tanya resep atau cara masak salah satu menu di atas, langsung ketik aja!`;
+      }
     }
 
     // FUNGSI SEDERHANA CHECK-IN HARI DIET (MUDAH DIJELASKAN SAAT PRESENTASI)
